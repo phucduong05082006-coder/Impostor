@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f1026" />
+      <stop offset="50%" stop-color="#181938" />
+      <stop offset="100%" stop-color="#070710" />
+    </linearGradient>
+    <linearGradient id="hatGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8b5cf6" />
+      <stop offset="100%" stop-color="#6d28d9" />
+    </linearGradient>
+    <linearGradient id="glassesGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ef4444" />
+      <stop offset="100%" stop-color="#b91c1c" />
+    </linearGradient>
+    <linearGradient id="neonGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06b6d4" />
+      <stop offset="50%" stop-color="#8b5cf6" />
+      <stop offset="100%" stop-color="#ef4444" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="10" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background rounded rect -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)" stroke="url(#neonGlow)" stroke-width="8"/>
+
+  <!-- Mystery Eye Rings / Target Radar -->
+  <circle cx="256" cy="270" r="160" fill="none" stroke="rgba(139, 92, 246, 0.2)" stroke-width="2" stroke-dasharray="10 10" />
+  <circle cx="256" cy="270" r="120" fill="none" stroke="rgba(6, 182, 212, 0.25)" stroke-width="2" />
+  <circle cx="256" cy="270" r="80" fill="none" stroke="rgba(239, 68, 68, 0.25)" stroke-width="2" stroke-dasharray="6 6" />
+
+  <!-- Fedora Hat -->
+  <!-- Brim -->
+  <ellipse cx="256" cy="200" rx="140" ry="24" fill="#090a14" stroke="url(#hatGrad)" stroke-width="6" filter="url(#glow)"/>
+  <!-- Crown -->
+  <path d="M 176 195 Q 166 120 220 100 Q 256 125 292 100 Q 346 120 336 195 Z" fill="url(#hatGrad)" stroke="#a855f7" stroke-width="4"/>
+  <!-- Hat Band -->
+  <path d="M 173 186 Q 256 200 339 186 L 338 196 Q 256 210 174 196 Z" fill="#ef4444" />
+
+  <!-- Sunglasses -->
+  <g filter="url(#glow)">
+    <!-- Left Lens -->
+    <path d="M 166 230 Q 220 230 226 265 Q 220 295 180 295 Q 150 295 152 255 Z" fill="#070710" stroke="url(#glassesGrad)" stroke-width="8"/>
+    <!-- Right Lens -->
+    <path d="M 286 265 Q 292 230 346 230 Q 360 255 362 295 Q 322 295 286 265 Z" fill="#070710" stroke="url(#glassesGrad)" stroke-width="8"/>
+    <!-- Bridge -->
+    <path d="M 224 246 Q 256 238 288 246" fill="none" stroke="url(#glassesGrad)" stroke-width="8" stroke-linecap="round"/>
+    <!-- Neon Highlights on glasses -->
+    <path d="M 165 242 L 205 242" stroke="#06b6d4" stroke-width="4" stroke-linecap="round" opacity="0.8"/>
+    <path d="M 305 242 L 345 242" stroke="#06b6d4" stroke-width="4" stroke-linecap="round" opacity="0.8"/>
+  </g>
+
+  <!-- Trench Coat Collar -->
+  <path d="M 150 410 L 210 330 L 256 365 L 302 330 L 362 410 Z" fill="#131428" stroke="rgba(255, 255, 255, 0.2)" stroke-width="4"/>
+
+  <!-- Text SPY PARTY -->
+  <text x="256" y="445" font-family="system-ui, -apple-system, sans-serif" font-size="34" font-weight="900" fill="#f8fafc" letter-spacing="6" text-anchor="middle">SPY PARTY</text>
+  <text x="256" y="475" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700" fill="#ef4444" letter-spacing="4" text-anchor="middle">AI LÀ GIÁN ĐIỆP</text>
+</svg>

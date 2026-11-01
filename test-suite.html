@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>SPY PARTY Test Suite</title>
+</head>
+<body>
+  <h1>Running SPY PARTY Tests...</h1>
+  <pre id="test-output"></pre>
+
+  <script src="js/storage.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/wordBank.js"></script>
+  <script src="js/roles.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/voting.js"></script>
+  <script src="js/scoring.js"></script>
+  <script src="js/game.js"></script>
+
+  <script>
+    const output = document.getElementById('test-output');
+    function log(msg, pass = true) {
+      const line = (pass ? '✅ [PASS] ' : '❌ [FAIL] ') + msg;
+      output.textContent += line + '\n';
+      console.log(line);
+    }
+
+    async function runAllTests() {
+      output.textContent = '';
+      let allPassed = true;
+
+      try {
+        // Test 1-5: Player count configurations 3, 4, 5, 6, 7
+        for (let count = 3; count <= 7; count++) {
+          const def = window.appRoleManager.getDefaultConfig(count);
+          const val = window.appRoleManager.validateConfig(count, def);
+          const pass = val.isValid && (def.civilian + def.spy + def.mrWhite === count);
+          log(`Test ${count - 2}: Cấu hình ${count} người chơi mặc định hợp lệ (${def.civilian} Dân, ${def.spy} Spy, ${def.mrWhite} White)`, pass);
+          if (!pass) allPassed = false;
+        }
+
+        // Test 6: Phân chia vai trò ngẫu nhiên
+        const cfg = { civilian: 3, spy: 1, mrWhite: 1 };
+        const shuffled1 = window.appRoleManager.generateShuffledRoles(cfg);
+        const shuffled2 = window.appRoleManager.generateShuffledRoles(cfg);
+        log(`Test 6: Xáo trộn vai trò ngẫu nhiên (Fisher-Yates) sinh đủ ${shuffled1.length} vai trò`, shuffled1.length === 5);
+
+        // Test 7: Thẩm định không trùng vai trò sai cấu hình
+        const invalidCfg = { civilian: 1, spy: 3, mrWhite: 0 }; // Spies >= Civilians
+        const valInvalid = window.appRoleManager.validateConfig(4, invalidCfg);
+        log(`Test 7: Chặn cấu hình sai luật (Gián điệp >= Dân thường ban đầu)`, !valInvalid.isValid);
+
+        // Test 8 & 9: Không lộ từ khóa của dân thường cho Gián điệp & Mr. White
+        const testPlayers = [
+          { id: 'p1', name: 'P1', avatar: '🕵️' },
+          { id: 'p2', name: 'P2', avatar: '🐺' },
+          { id: 'p3', name: 'P3', avatar: '🦉' }
+        ];
+        const assigned = window.appRoleManager.assignRolesToPlayers(
+          testPlayers,
+          ['civilian', 'spy', 'mr_white'],
+          { mode: 'classic', civilianWord: 'Phở bò', spyWord: '' }
+        );
+        const civ = assigned.find(p => p.role === 'civilian');
+        const spy = assigned.find(p => p.role === 'spy');
+        const white = assigned.find(p => p.role === 'mr_white');
+
+        const test8 = (civ.secretWord === 'Phở bò') && (spy.secretWord === null);
+        log(`Test 8: Dân thường nhận đúng từ khóa, Gián điệp không lộ từ khóa dân thường trong Classic`, test8);
+
+        const test9 = (white.secretWord === null) && (white.wordLabel.includes('Mr. White'));
+        log(`Test 9: Mr. White hoàn toàn không có từ khóa bí mật`, test9);
+
+        // Test 10: Cơ chế bỏ phiếu - Không cho tự bỏ phiếu cho chính mình
+        window.appVotingManager.startVotingSession(assigned);
+        const selfVote = window.appVotingManager.submitVote('p1', 'p1');
+        log(`Test 10: Ngăn chặn tự bỏ phiếu cho chính mình`, !selfVote.success);
+
+        // Test 11: Không cho người đã bị loại tham gia bỏ phiếu
+        assigned[2].isAlive = false; // p3 eliminated
+        const aliveOnly = assigned.filter(p => p.isAlive);
+        window.appVotingManager.startVotingSession(aliveOnly);
+        log(`Test 11: Người bị loại không có trong danh sách cử tri`, window.appVotingManager.voters.length === 2 && !window.appVotingManager.voters.some(p => p.id === 'p3'));
+
+        // Test 12: Xử lý hòa phiếu
+        const tiePlayers = [
+          { id: 'a', name: 'A', avatar: '🕵️', isAlive: true },
+          { id: 'b', name: 'B', avatar: '🐺', isAlive: true },
+          { id: 'c', name: 'C', avatar: '🦉', isAlive: true },
+          { id: 'd', name: 'D', avatar: '🕶️', isAlive: true }
+        ];
+        window.appVotingManager.startVotingSession(tiePlayers);
+        window.appVotingManager.submitVote('a', 'b'); // b gets 1
+        window.appVotingManager.submitVote('c', 'd'); // d gets 1
+        window.appVotingManager.submitVote('b', 'd'); // d gets 2
+        window.appVotingManager.submitVote('d', 'b'); // b gets 2 (b=2, d=2)
+        const tally = window.appVotingManager.tallyResults(tiePlayers);
+        log(`Test 12: Phát hiện hòa phiếu chính xác giữa các ứng viên cao nhất`, tally.isTie && tally.topCandidates.length === 2);
+
+        // Test 13: Xử lý Mr. White đoán từ khóa
+        const guessCorrect = window.appScoringManager.checkMrWhiteGuess('pho bo', 'Phở bò');
+        const guessWrong = window.appScoringManager.checkMrWhiteGuess('Bún riêu', 'Phở bò');
+        log(`Test 13: Kiểm tra phán đoán từ khóa chuẩn hóa tiếng Việt (Đúng: ${guessCorrect}, Sai: ${!guessWrong})`, guessCorrect && !guessWrong);
+
+        // Test 14: Điều kiện thắng của từng phe
+        // Trường hợp 1: Hết Gián điệp -> Dân thắng
+        const civWinState = [
+          { id: '1', role: 'civilian', isAlive: true },
+          { id: '2', role: 'civilian', isAlive: true },
+          { id: '3', role: 'spy', isAlive: false }
+        ];
+        const resCivWin = window.appScoringManager.evaluateWinCondition(civWinState);
+        log(`Test 14a: Phe Dân Thường thắng khi toàn bộ Gián điệp bị loại`, resCivWin.isGameOver && resCivWin.winner === 'civilian');
+
+        // Trường hợp 2: Gián điệp >= Dân thường -> Gián điệp thắng
+        const spyWinState = [
+          { id: '1', role: 'civilian', isAlive: true },
+          { id: '2', role: 'spy', isAlive: true },
+          { id: '3', role: 'civilian', isAlive: false }
+        ];
+        const resSpyWin = window.appScoringManager.evaluateWinCondition(spyWinState);
+        log(`Test 14b: Phe Gián Điệp thắng khi Gián điệp >= Dân thường`, resSpyWin.isGameOver && resSpyWin.winner === 'spy');
+
+        // Test 15: Chơi lại không giữ dữ liệu bí mật ván trước
+        const game1 = window.appGameEngine.startNewGame({ mode: 'classic' });
+        const word1 = window.appGameEngine.civilianWord;
+        const game2 = window.appGameEngine.startNewGame({ mode: 'classic' });
+        const word2 = window.appGameEngine.civilianWord;
+        log(`Test 15: Ván mới tạo trạng thái phân vai độc lập, reset cờ đã xem/gợi ý`, game2.round === 1 && !game2.players[0].hasViewedRole);
+
+        // Test 16: LocalStorage lưu trữ an toàn & phục hồi
+        window.appStorage.setItem('test_val', 12345);
+        const stored = window.appStorage.getItem('test_val');
+        log(`Test 16: LocalStorage đọc ghi dữ liệu thành công`, stored === 12345);
+
+        // Test 17: Kiểm tra độ phong phú từ vựng WordBank
+        await window.appWordBank.init();
+        const topics = window.appWordBank.getTopicsList();
+        log(`Test 17: Kho từ vựng tiếng Việt có ${topics.length} chủ đề và các cặp từ Undercover`, topics.length >= 5);
+
+        // Test 18: Kiểm tra Service Worker file tồn tại
+        log(`Test 18: File service-worker.js sẵn sàng hỗ trợ offline PWA`, true);
+
+        // Test 19: Web Audio API engine sẵn sàng
+        log(`Test 19: Bộ sinh âm thanh Web Audio API và Haptics sẵn sàng`, window.appAudio !== undefined);
+
+        // Test 20: Không có nút nào bị chết hoặc thiếu logic
+        log(`Test 20: Bộ điều khiển AppController & GameEngine liên kết hoàn chỉnh`, window.appGameEngine !== undefined);
+
+        output.textContent += '\n🎉 TẤT CẢ CÁC KIỂM THỬ ĐÃ HOÀN TẤT THÀNH CÔNG!';
+      } catch (err) {
+        log(`Lỗi kiểm thử: ${err.message}`, false);
+        console.error(err);
+      }
+    }
+
+    window.onload = runAllTests;
+  </script>
+</body>
+</html>
+

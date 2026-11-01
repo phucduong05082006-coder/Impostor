@@ -1,0 +1,376 @@
+/**
+ * SPY PARTY - In-Game Screens CSS
+ * Setup, 3D Secret Card Flip, Clue Round, Discussion, Pass-and-Play Voting, Elimination, Results
+ */
+
+/* --- 1. Player Setup Screen --- */
+.players-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.2rem;
+  max-height: 55vh;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.player-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-glass);
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition-fast);
+}
+
+.player-item:focus-within {
+  border-color: var(--primary);
+}
+
+.player-name-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.player-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+/* --- 2. Game Setup Screen --- */
+.mode-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 1.2rem;
+}
+
+.mode-tab {
+  padding: 0.75rem 0.4rem;
+  text-align: center;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  transition: all var(--transition-fast);
+}
+
+.mode-tab.active {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.3) 0%, rgba(239, 68, 68, 0.2) 100%);
+  border-color: var(--primary);
+  color: #fff;
+  box-shadow: 0 0 15px var(--primary-glow);
+}
+
+.roles-stepper-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+  margin-bottom: 1.2rem;
+}
+
+.role-stepper-card {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 0.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.stepper-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.stepper-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.stepper-value {
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+/* --- 3. Secret Role Reveal (3D Flip Card) --- */
+.reveal-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  perspective: 1000px;
+  padding: 1rem 0;
+}
+
+.card-3d-wrapper {
+  width: 100%;
+  max-width: 340px;
+  height: 440px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-3d-wrapper.flipped {
+  transform: rotateY(180deg);
+}
+
+.card-face {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  border-radius: var(--radius-lg);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2rem 1.5rem;
+  box-shadow: var(--shadow-lg);
+  border: 2px solid var(--border-glass);
+}
+
+/* Mặt trước (Ẩn danh & Che thông tin) */
+.card-front {
+  background: linear-gradient(145deg, #131428 0%, #0a0b18 100%);
+}
+
+.card-front-shield {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: rgba(139, 92, 246, 0.15);
+  border: 2px dashed rgba(139, 92, 246, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  margin: 1.5rem 0;
+  animation: pulse-shield 2s infinite;
+}
+
+@keyframes pulse-shield {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+/* Mặt sau (Tiết lộ vai trò) */
+.card-back {
+  transform: rotateY(180deg);
+  background: linear-gradient(145deg, #181938 0%, #0e0f24 100%);
+  text-align: center;
+}
+
+.secret-word-box {
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid var(--border-focus);
+  border-radius: var(--radius-md);
+  padding: 1.2rem;
+  width: 100%;
+  margin: 1rem 0;
+  box-shadow: 0 0 25px rgba(139, 92, 246, 0.3);
+}
+
+.secret-word-text {
+  font-size: 1.75rem;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 1px;
+}
+
+.reveal-progress-bar {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 1rem;
+}
+
+.reveal-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+}
+.reveal-dot.done { background: var(--accent-success); }
+.reveal-dot.active { background: var(--primary); transform: scale(1.3); }
+
+/* --- 4. Clue & Discussion Rounds --- */
+.clue-turn-hero {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem 1rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.2rem;
+  box-shadow: var(--shadow-md);
+}
+
+.players-status-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+  margin-bottom: 1.2rem;
+}
+
+.player-status-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  padding: 0.6rem 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.player-status-card.current {
+  border-color: var(--primary);
+  background: rgba(139, 92, 246, 0.15);
+  box-shadow: 0 0 12px var(--primary-glow);
+}
+
+.player-status-card.completed {
+  opacity: 0.6;
+}
+
+/* --- 5. Pass-and-Play Voting Screen --- */
+.voting-hero {
+  text-align: center;
+  margin-bottom: 1.2rem;
+}
+
+.voting-candidates-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.2rem;
+  max-height: 45vh;
+  overflow-y: auto;
+}
+
+.candidate-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  padding: 0.9rem 1.1rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.candidate-card:hover {
+  background: #252752;
+}
+
+.candidate-card.selected {
+  border-color: var(--color-spy);
+  background: rgba(239, 68, 68, 0.18);
+  box-shadow: 0 0 16px var(--color-spy-glow);
+  transform: scale(1.02);
+}
+
+/* --- 6. Voting Results Screen --- */
+.result-tally-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.result-tally-item {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  padding: 0.9rem;
+}
+
+.tally-bar-bg {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-full);
+  margin-top: 0.6rem;
+  overflow: hidden;
+}
+
+.tally-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary) 0%, var(--color-spy) 100%);
+  border-radius: var(--radius-full);
+  transition: width 0.6s ease;
+}
+
+/* --- 7. Elimination & Final Game Over --- */
+.elimination-banner {
+  text-align: center;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.role-reveal-badge {
+  font-size: 1.35rem;
+  font-weight: 800;
+  padding: 0.6rem 1.5rem;
+  border-radius: var(--radius-full);
+  letter-spacing: 1px;
+}
+
+.game-over-hero {
+  text-align: center;
+  padding: 1.8rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.all-roles-summary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin: 1.2rem 0;
+  max-height: 40vh;
+  overflow-y: auto;
+}
+
+.role-summary-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+}
+

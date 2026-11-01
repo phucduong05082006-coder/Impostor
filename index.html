@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#070710">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="SPY PARTY - Trò chơi suy luận và tìm gián điệp hấp dẫn dành cho nhóm từ 3-7 người chơi trực tiếp trên cùng một điện thoại.">
+  <title>SPY PARTY – Ai Là Gián Điệp</title>
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/home.css">
+  <link rel="stylesheet" href="css/game.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <div id="app-container">
+
+    <!-- ==================== 1. HOME SCREEN ==================== -->
+    <section id="screen-home" class="screen active">
+      <div class="home-hero">
+        <div class="home-logo-badge">🕵️</div>
+        <h1 class="home-title">SPY PARTY</h1>
+        <div class="home-subtitle">AI LÀ GIÁN ĐIỆP?</div>
+        <p class="home-desc">Trò chơi suy luận, đánh lừa và tìm kiếm điệp viên ẩn danh cùng bạn bè trên một thiết bị!</p>
+      </div>
+
+      <div class="home-menu">
+        <button id="btn-home-start" class="btn btn-primary btn-start-game btn-lg">
+          <span>🚀 BẮT ĐẦU CHƠI</span>
+        </button>
+        <div class="home-sub-menu">
+          <button id="btn-home-rules" class="btn btn-secondary">
+            <span>📖 Luật Chơi</span>
+          </button>
+          <button id="btn-home-history" class="btn btn-secondary">
+            <span>📊 Lịch Sử</span>
+          </button>
+          <button id="btn-home-settings" class="btn btn-secondary">
+            <span>⚙️ Cài Đặt</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="home-footer-text">
+        <span>Phiên bản 1.0 • Hỗ trợ 3 – 7 người chơi</span>
+      </div>
+    </section>
+
+    <!-- ==================== 2. PLAYER SETUP SCREEN ==================== -->
+    <section id="screen-players" class="screen">
+      <div class="screen-header">
+        <button class="btn btn-outline btn-icon btn-nav-back" data-to="home">←</button>
+        <h2 class="screen-title">👥 Người Chơi (<span id="players-count-badge">4</span>/7)</h2>
+        <button id="btn-add-player" class="btn btn-secondary btn-icon" title="Thêm người chơi">➕</button>
+      </div>
+
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.8rem;">
+        Chạm avatar để đổi biểu tượng, chạm tên để chỉnh sửa hoặc nhấn 🎲 để tạo tên ngẫu nhiên:
+      </p>
+
+      <div id="players-list-container" class="players-list">
+        <!-- Render động từ PlayerManager -->
+      </div>
+
+      <div style="margin-top: auto; display: flex; flex-direction: column; gap: 0.6rem;">
+        <button id="btn-players-continue" class="btn btn-primary btn-block btn-lg">
+          <span>TIẾP TỤC CẤU HÌNH ➔</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== 3. GAME SETUP SCREEN ==================== -->
+    <section id="screen-game-setup" class="screen">
+      <div class="screen-header">
+        <button class="btn btn-outline btn-icon btn-nav-back" data-to="players">←</button>
+        <h2 class="screen-title">⚙️ Thiết Lập Trận Đấu</h2>
+        <div style="width: 42px;"></div>
+      </div>
+
+      <!-- Chọn chế độ chơi -->
+      <div class="form-group">
+        <label class="form-label">CHẾ ĐỘ CHƠI</label>
+        <div class="mode-selector">
+          <div class="mode-tab active" data-mode="classic">
+            <div>🎭 Cổ Điển</div>
+            <div style="font-size: 0.7rem; font-weight: normal; margin-top: 2px;">Classic</div>
+          </div>
+          <div class="mode-tab" data-mode="undercover">
+            <div>🕵️ Điệp Viên</div>
+            <div style="font-size: 0.7rem; font-weight: normal; margin-top: 2px;">Undercover</div>
+          </div>
+          <div class="mode-tab" data-mode="custom">
+            <div>⚡ Tùy Chỉnh</div>
+            <div style="font-size: 0.7rem; font-weight: normal; margin-top: 2px;">Custom</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phân bổ vai trò -->
+      <div class="form-group">
+        <label class="form-label" style="display: flex; justify-content: space-between;">
+          <span>PHÂN BỔ VAI TRÒ</span>
+          <span id="role-setup-status" style="color: var(--accent-success); font-weight: bold;">Hợp lệ (4/4)</span>
+        </label>
+        <div class="roles-stepper-grid">
+          <!-- Dân thường -->
+          <div class="role-stepper-card">
+            <span class="badge badge-civilian">🛡️ Dân</span>
+            <div class="stepper-controls">
+              <button class="stepper-btn btn-stepper-minus" data-role="civilian">-</button>
+              <span id="stepper-val-civilian" class="stepper-value">3</span>
+              <button class="stepper-btn btn-stepper-plus" data-role="civilian">+</button>
+            </div>
+          </div>
+          <!-- Gián điệp -->
+          <div class="role-stepper-card">
+            <span class="badge badge-spy">🕵️ Spy</span>
+            <div class="stepper-controls">
+              <button class="stepper-btn btn-stepper-minus" data-role="spy">-</button>
+              <span id="stepper-val-spy" class="stepper-value">1</span>
+              <button class="stepper-btn btn-stepper-plus" data-role="spy">+</button>
+            </div>
+          </div>
+          <!-- Mr White -->
+          <div class="role-stepper-card">
+            <span class="badge badge-white">👤 White</span>
+            <div class="stepper-controls">
+              <button class="stepper-btn btn-stepper-minus" data-role="mrWhite">-</button>
+              <span id="stepper-val-mrwhite" class="stepper-value">0</span>
+              <button class="stepper-btn btn-stepper-plus" data-role="mrWhite">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chủ đề từ khóa -->
+      <div class="form-group">
+        <label class="form-label">CHỦ ĐỀ TỪ KHÓA</label>
+        <select id="select-topic" class="form-select">
+          <option value="all">🌟 Tất cả chủ đề ngẫu nhiên</option>
+          <!-- Option topics render động -->
+        </select>
+      </div>
+
+      <!-- Độ khó -->
+      <div class="form-group">
+        <label class="form-label">ĐỘ KHÓ TỪ KHÓA</label>
+        <select id="select-difficulty" class="form-select">
+          <option value="all">Tất cả độ khó (Dễ, Trung bình, Khó)</option>
+          <option value="easy">Dễ (Quen thuộc hàng ngày)</option>
+          <option value="medium">Trung bình (Thách thức vừa)</option>
+          <option value="hard">Khó (Độc đáo, suy luận cao)</option>
+        </select>
+      </div>
+
+      <!-- Tóm tắt cấu hình -->
+      <div class="card card-glass" style="margin-bottom: 1.2rem; padding: 0.9rem;">
+        <div style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5;" id="setup-summary-text">
+          Đang nạp cấu hình...
+        </div>
+      </div>
+
+      <button id="btn-start-game-match" class="btn btn-primary btn-block btn-lg" style="margin-top: auto;">
+        <span>🔥 BẮT ĐẦU TRẬN ĐẤU</span>
+      </button>
+    </section>
+
+    <!-- ==================== 4. SECRET ROLE REVEAL SCREEN ==================== -->
+    <section id="screen-role-reveal" class="screen">
+      <div class="screen-header" style="border: none; margin-bottom: 0;">
+        <span class="badge badge-spy">BẢO MẬT TUYỆT ĐỐI</span>
+        <div class="reveal-progress-bar" id="reveal-dots-container">
+          <!-- Render dots tiến độ -->
+        </div>
+      </div>
+
+      <div class="reveal-container">
+        <div id="card-3d-wrapper" class="card-3d-wrapper">
+          <!-- MẶT TRƯỚC (CHE THÔNG TIN) -->
+          <div class="card-face card-front">
+            <div style="text-align: center;">
+              <div style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">
+                ĐƯA THIẾT BỊ CHO
+              </div>
+              <div id="reveal-player-name" style="font-size: 1.7rem; font-weight: 800; color: #fff; margin-top: 0.2rem;">
+                Điệp Viên X
+              </div>
+            </div>
+
+            <div class="card-front-shield">
+              <span id="reveal-player-avatar">🕵️‍♂️</span>
+            </div>
+
+            <div style="text-align: center; width: 100%;">
+              <p style="font-size: 0.8rem; color: var(--color-spy); margin-bottom: 1rem; font-weight: 600;">
+                ⚠️ Chỉ người này được nhìn màn hình!
+              </p>
+              <button id="btn-reveal-flip" class="btn btn-primary btn-block">
+                <span>👁️ CHẠM ĐỂ XEM VAI TRÒ</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- MẶT SAU (TIẾT LỘ VAI TRÒ) -->
+          <div class="card-face card-back" id="card-back-element">
+            <div style="width: 100%;">
+              <div id="reveal-role-badge" class="badge badge-civilian">PHE DÂN THƯỜNG</div>
+              <div id="reveal-role-icon" style="font-size: 3rem; margin: 0.6rem 0;">🛡️</div>
+              <div id="reveal-role-title" style="font-size: 1.45rem; font-weight: 800; color: var(--color-civilian);">
+                DÂN THƯỜNG
+              </div>
+            </div>
+
+            <div class="secret-word-box">
+              <div id="reveal-word-label" style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">
+                TỪ KHÓA BÍ MẬT
+              </div>
+              <div id="reveal-word-value" class="secret-word-text">
+                PHỞ BÒ
+              </div>
+            </div>
+
+            <p id="reveal-role-desc" style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.4; margin-bottom: 0.8rem;">
+              Mô tả nhiệm vụ vai trò...
+            </p>
+
+            <button id="btn-reveal-remembered" class="btn btn-danger btn-block">
+              <span>🔒 TÔI ĐÃ NHỚ - CHE LẠI</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 5. CLUE ROUND SCREEN ==================== -->
+    <section id="screen-clue" class="screen">
+      <div class="screen-header">
+        <span class="badge" style="background: rgba(255,255,255,0.1); color: #fff;">
+          VÒNG <span id="clue-round-num">1</span>: GỢI Ý
+        </span>
+        <div id="clue-timer-badge" class="timer-pill">
+          <span>⏱️</span>
+          <span id="clue-timer-text">45s</span>
+        </div>
+      </div>
+
+      <div class="clue-turn-hero">
+        <div style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;">
+          ĐẾN LƯỢT ĐƯA RA GỢI Ý
+        </div>
+        <div class="avatar avatar-lg" id="clue-speaker-avatar" style="border-color: var(--primary); box-shadow: 0 0 20px var(--primary-glow);">
+          🕵️‍♂️
+        </div>
+        <div id="clue-speaker-name" style="font-size: 1.4rem; font-weight: 800; color: #fff;">
+          Điệp Viên X
+        </div>
+        <div style="font-size: 0.82rem; color: var(--accent-gold); max-width: 320px; line-height: 1.4;">
+          💡 Gợi ý một từ hoặc cụm từ liên quan. Tuyệt đối không nói trực tiếp từ khóa!
+        </div>
+      </div>
+
+      <label class="form-label">TIẾN ĐỘ VÒNG GỢI Ý</label>
+      <div id="clue-players-status-list" class="players-status-grid">
+        <!-- Render danh sách người chơi trong vòng -->
+      </div>
+
+      <button id="btn-clue-confirm-done" class="btn btn-primary btn-block btn-lg" style="margin-top: auto;">
+        <span>XÁC NHẬN ĐÃ GỢI Ý XONG ➔</span>
+      </button>
+    </section>
+
+    <!-- ==================== 6. DISCUSSION SCREEN ==================== -->
+    <section id="screen-discussion" class="screen">
+      <div class="screen-header">
+        <span class="badge badge-spy">TRANH LUẬN TỰ DO</span>
+        <div id="discuss-timer-badge" class="timer-pill">
+          <span>⏱️</span>
+          <span id="discuss-timer-text">90s</span>
+        </div>
+      </div>
+
+      <div class="clue-turn-hero" style="background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.3);">
+        <div style="font-size: 2.2rem;">🗣️</div>
+        <div style="font-size: 1.25rem; font-weight: 800; color: #fff;">
+          Ai Có Gợi Ý Khả Nghi Nhất?
+        </div>
+        <p style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.4;">
+          Hãy chất vấn, đối chiếu manh mối và quan sát thái độ của nhau để phát hiện kẻ giả vờ!
+        </p>
+      </div>
+
+      <label class="form-label">DANH SÁCH NGHI PHẠM CÒN SỐNG</label>
+      <div id="discuss-alive-players-list" class="players-status-grid">
+        <!-- Render danh sách sống -->
+      </div>
+
+      <button id="btn-start-vote-now" class="btn btn-danger btn-block btn-lg" style="margin-top: auto;">
+        <span>🗳️ BẮT ĐẦU BỎ PHIẾU NGAY</span>
+      </button>
+    </section>
+
+    <!-- ==================== 7. PASS-AND-PLAY VOTING SCREEN ==================== -->
+    <section id="screen-voting" class="screen">
+      <div class="screen-header">
+        <span class="badge badge-spy" id="voting-mode-badge">BỎ PHIẾU KÍN</span>
+        <span id="voting-progress-text" style="font-size: 0.85rem; font-weight: bold; color: var(--accent-gold);">
+          Cử tri 1/4
+        </span>
+      </div>
+
+      <!-- Khung che danh tính người bỏ phiếu -->
+      <div id="voting-curtain-box" class="clue-turn-hero">
+        <div style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase;">
+          CHUYỂN MÁY CHO CỬ TRI
+        </div>
+        <div class="avatar avatar-lg" id="voter-avatar">
+          🕵️
+        </div>
+        <div id="voter-name" style="font-size: 1.5rem; font-weight: 800; color: #fff;">
+          Cú Đêm
+        </div>
+        <button id="btn-unlock-ballot" class="btn btn-primary" style="margin-top: 0.5rem;">
+          <span>🔓 MỞ PHIẾU BẦU CỦA TÔI</span>
+        </button>
+      </div>
+
+      <!-- Khung chọn ứng viên nghi ngờ (Ẩn ban đầu) -->
+      <div id="voting-ballot-box" style="display: none; flex-direction: column; flex: 1;">
+        <label class="form-label" style="color: var(--color-spy);">CHỌN 1 NGƯỜI BẠN NGHI NGỜ LÀ GIÁN ĐIỆP:</label>
+        <div id="voting-candidates-container" class="voting-candidates-grid">
+          <!-- Render candidate cards -->
+        </div>
+
+        <button id="btn-submit-vote" class="btn btn-danger btn-block btn-lg" style="margin-top: auto;" disabled>
+          <span>🗳️ XÁC NHẬN BỎ PHIẾU</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== 8. VOTING RESULTS SCREEN ==================== -->
+    <section id="screen-voting-result" class="screen">
+      <div class="screen-header">
+        <span class="badge badge-spy">KẾT QUẢ BỎ PHIẾU</span>
+        <div style="width: 42px;"></div>
+      </div>
+
+      <div class="clue-turn-hero" id="result-status-hero">
+        <div style="font-size: 2.2rem;" id="result-status-icon">⚖️</div>
+        <div id="result-status-title" style="font-size: 1.35rem; font-weight: 800; color: #fff;">
+          ĐÃ HOÀN TẤT KIỂM PHIẾU
+        </div>
+        <div id="result-status-desc" style="font-size: 0.88rem; color: var(--text-muted);">
+          Tổng hợp số phiếu của các người chơi:
+        </div>
+      </div>
+
+      <div id="voting-tallies-container" class="result-tally-list">
+        <!-- Render bars kết quả kiểm phiếu -->
+      </div>
+
+      <div id="voting-result-actions" style="margin-top: auto; display: flex; flex-direction: column; gap: 0.6rem;">
+        <!-- Nút hành động tương ứng: Loại người / Bỏ phiếu lại / Bỏ qua vòng -->
+      </div>
+    </section>
+
+    <!-- ==================== 9. ELIMINATION SCREEN ==================== -->
+    <section id="screen-elimination" class="screen">
+      <div class="elimination-banner" style="margin-top: 1rem;">
+        <div style="font-size: 0.9rem; color: var(--color-spy); letter-spacing: 2px; font-weight: bold; text-transform: uppercase;">
+          NGƯỜI BỊ LOẠI
+        </div>
+        <div class="avatar avatar-lg" id="eliminated-avatar" style="width: 90px; height: 90px; font-size: 3.2rem; border-color: var(--color-spy);">
+          🐺
+        </div>
+        <div id="eliminated-name" style="font-size: 1.8rem; font-weight: 800; color: #fff;">
+          Sói Xám
+        </div>
+
+        <div style="margin: 1rem 0;">
+          <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.4rem;">THÂN PHẬN THỰC SỰ:</div>
+          <div id="eliminated-role-badge" class="role-reveal-badge badge-spy">
+            🕵️ GIÁN ĐIỆP
+          </div>
+        </div>
+
+        <p id="elimination-narrative" style="font-size: 0.9rem; color: #cbd5e1; max-width: 320px; line-height: 1.5;">
+          Người chơi này đã chính thức bị loại khỏi cuộc chơi!
+        </p>
+      </div>
+
+      <button id="btn-elimination-continue" class="btn btn-primary btn-block btn-lg" style="margin-top: auto;">
+        <span>TIẾP TỤC ➔</span>
+      </button>
+    </section>
+
+    <!-- ==================== 10. MR WHITE GUESS SCREEN ==================== -->
+    <section id="screen-mrwhite-guess" class="screen">
+      <div class="screen-header">
+        <span class="badge badge-white">CƠ HỘI DUY NHẤT</span>
+        <div style="width: 42px;"></div>
+      </div>
+
+      <div class="clue-turn-hero" style="border-color: rgba(248, 250, 252, 0.4); background: rgba(248, 250, 252, 0.08);">
+        <div style="font-size: 2.5rem;">👤</div>
+        <div style="font-size: 1.35rem; font-weight: 800; color: #fff;">
+          MR. WHITE BỊ BẮT!
+        </div>
+        <p style="font-size: 0.85rem; color: #e2e8f0; line-height: 1.4;">
+          Bạn có 1 cơ hội duy nhất để đoán từ khóa của Dân thường. Nếu đoán đúng, bạn sẽ <strong style="color: var(--accent-gold);">THẮNG NGAY LẬP TỨC</strong>!
+        </p>
+      </div>
+
+      <div class="form-group" style="margin-top: 1rem;">
+        <label class="form-label">NHẬP TỪ KHÓA BẠN ĐOÁN:</label>
+        <input type="text" id="input-mrwhite-guess" class="form-input" placeholder="Ví dụ: Phở bò, Cà phê..." autocomplete="off">
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 0.6rem; margin-top: auto;">
+        <button id="btn-submit-mrwhite-guess" class="btn btn-primary btn-block btn-lg">
+          <span>🎯 XÁC NHẬN DỰ ĐOÁN</span>
+        </button>
+        <div style="display: flex; gap: 0.6rem;">
+          <button id="btn-host-confirm-white-win" class="btn btn-outline" style="flex: 1; font-size: 0.8rem; color: var(--accent-gold);">
+            Đoán Nói Ngoài Trúng (Thắng)
+          </button>
+          <button id="btn-host-confirm-white-lose" class="btn btn-outline" style="flex: 1; font-size: 0.8rem; color: var(--text-dim);">
+            Đoán Sai (Bị Loại)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 11. GAME OVER / RESULT SCREEN ==================== -->
+    <section id="screen-game-over" class="screen">
+      <div class="game-over-hero">
+        <div style="font-size: 3.5rem;" id="gameover-trophy-icon">🏆</div>
+        <div id="gameover-winner-title" style="font-size: 1.6rem; font-weight: 900; color: #fff; line-height: 1.3;">
+          PHE DÂN THƯỜNG CHIẾN THẮNG!
+        </div>
+        <div id="gameover-reason" style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.4;">
+          Lý do thắng...
+        </div>
+      </div>
+
+      <!-- Khung từ khóa công khai -->
+      <div class="card card-glass" style="margin-bottom: 0.8rem; text-align: center; padding: 0.85rem;">
+        <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase;">TỪ KHÓA CỦA DÂN THƯỜNG</div>
+        <div id="gameover-civilian-word" style="font-size: 1.4rem; font-weight: 800; color: var(--color-civilian); margin-top: 0.2rem;">
+          Phở bò
+        </div>
+        <div id="gameover-spy-word-box" style="display: none; margin-top: 0.4rem; border-top: 1px dashed var(--border-glass); padding-top: 0.4rem;">
+          <div style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase;">TỪ KHÓA CỦA GIÁN ĐIỆP (UNDERCOVER)</div>
+          <div id="gameover-spy-word" style="font-size: 1.25rem; font-weight: 800; color: var(--color-spy); margin-top: 0.2rem;">
+            Bún bò Huế
+          </div>
+        </div>
+      </div>
+
+      <label class="form-label">DANH TÍNH TẤT CẢ NGƯỜI CHƠI</label>
+      <div id="gameover-all-roles-container" class="all-roles-summary-list">
+        <!-- Render danh sách tất cả người chơi kèm vai trò -->
+      </div>
+
+      <div style="display: flex; gap: 0.6rem; margin-top: auto;">
+        <button id="btn-gameover-replay" class="btn btn-primary" style="flex: 1.3;">
+          <span>🔄 CHƠI LẠI</span>
+        </button>
+        <button id="btn-gameover-home" class="btn btn-secondary" style="flex: 1;">
+          <span>🏠 TRANG CHỦ</span>
+        </button>
+      </div>
+    </section>
+
+  </div><!-- /#app-container -->
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- Modal Luật Chơi -->
+  <div id="modal-rules" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 style="font-size: 1.15rem; font-weight: bold;">📖 Hướng Dẫn & Luật Chơi</h3>
+        <button class="btn btn-outline btn-icon modal-close" style="width: 32px; height: 32px;">✕</button>
+      </div>
+      <div class="modal-body">
+        <h4 style="color: var(--primary); margin-bottom: 0.4rem;">MỤC TIÊU</h4>
+        <p style="margin-bottom: 1rem;">
+          Người chơi dùng chung 1 thiết bị, lần lượt xem vai trò bí mật. Sau đó đưa ra gợi ý và bỏ phiếu để tìm ra kẻ ẩn danh!
+        </p>
+
+        <h4 style="color: var(--text-main); margin-bottom: 0.5rem;">CÁC VAI TRÒ</h4>
+        <div class="rules-role-card rules-civilian">
+          <strong style="color: var(--color-civilian);">🛡️ Dân Thường:</strong> Biết từ khóa bí mật. Cùng nhau gợi ý khéo léo để nhận diện phe mình và vote loại Gián điệp.
+        </div>
+        <div class="rules-role-card rules-spy">
+          <strong style="color: var(--color-spy);">🕵️ Gián Điệp:</strong> Không biết từ khóa (ở Classic) hoặc nhận từ khóa tương đồng (ở Undercover). Cần giả vờ hòa nhập và sống sót!
+        </div>
+        <div class="rules-role-card rules-mrwhite">
+          <strong style="color: var(--color-mrwhite);">👤 Mr. White:</strong> Hoàn toàn không có từ khóa. Nếu bị loại, có 1 cơ hội đoán từ khóa của dân thường để lật kèo thắng ngay!
+        </div>
+
+        <h4 style="color: var(--text-main); margin: 0.8rem 0 0.4rem;">ĐIỀU KIỆN THẮNG</h4>
+        <ul style="padding-left: 1.2rem; margin-bottom: 0.8rem; font-size: 0.9rem;">
+          <li><strong>Dân Thường thắng:</strong> Khi tất cả Gián điệp bị loại và Mr. White không đoán đúng.</li>
+          <li><strong>Gián Điệp thắng:</strong> Khi số Gián điệp còn sống &ge; số Dân thường.</li>
+          <li><strong>Mr. White thắng:</strong> Khi bị loại nhưng đoán chính xác từ khóa của Dân thường.</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary modal-close" style="width: 100%;">ĐÃ HIỂU</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Cài Đặt -->
+  <div id="modal-settings" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 style="font-size: 1.15rem; font-weight: bold;">⚙️ Cài Đặt & Quản Lý Từ Khóa</h3>
+        <button class="btn btn-outline btn-icon modal-close" style="width: 32px; height: 32px;">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">ÂM THANH VÀ RUNG</label>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+            <span>Hiệu ứng âm thanh</span>
+            <input type="checkbox" id="setting-sound-toggle" checked style="width: 20px; height: 20px;">
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+            <span>Âm lượng</span>
+            <input type="range" id="setting-volume-slider" min="0" max="1" step="0.1" value="0.7">
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Rung phản hồi (Haptic)</span>
+            <input type="checkbox" id="setting-vibration-toggle" checked style="width: 20px; height: 20px;">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">THỜI GIAN ĐẾM NGƯỢC</label>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+            <span>Thời gian mỗi lượt gợi ý:</span>
+            <select id="setting-clue-time" class="form-select" style="width: 110px;">
+              <option value="30">30 giây</option>
+              <option value="45" selected>45 giây</option>
+              <option value="60">60 giây</option>
+            </select>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Thời gian thảo luận:</span>
+            <select id="setting-discuss-time" class="form-select" style="width: 110px;">
+              <option value="60">60 giây</option>
+              <option value="90" selected>90 giây</option>
+              <option value="120">120 giây</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" style="border-top: 1px solid var(--border-glass); padding-top: 1rem;">
+          <label class="form-label">THÊM TỪ KHÓA TỰ TẠO</label>
+          <div style="display: flex; gap: 0.5rem; margin-bottom: 0.6rem;">
+            <input type="text" id="input-custom-word" class="form-input" placeholder="Nhập từ mới (VD: Bánh tráng)...">
+            <button id="btn-add-custom-word" class="btn btn-secondary">Thêm</button>
+          </div>
+          <div id="custom-words-list" style="max-height: 120px; overflow-y: auto; font-size: 0.85rem;">
+            <!-- Danh sách từ tự tạo -->
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-save-settings" class="btn btn-primary" style="width: 100%;">LƯU THAY ĐỔI</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Thống Kê & Lịch Sử -->
+  <div id="modal-history" class="modal-overlay">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 style="font-size: 1.15rem; font-weight: bold;">📊 Thống Kê & Lịch Sử Trận</h3>
+        <button class="btn btn-outline btn-icon modal-close" style="width: 32px; height: 32px;">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="stat-value" id="stat-total-games">0</div>
+            <div class="stat-label">Tổng Trận Chơi</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value" id="stat-civ-rate" style="color: var(--color-civilian);">0%</div>
+            <div class="stat-label">Dân Thắng</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value" id="stat-spy-rate" style="color: var(--color-spy);">0%</div>
+            <div class="stat-label">Gián Điệp Thắng</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value" id="stat-white-wins" style="color: var(--color-mrwhite);">0</div>
+            <div class="stat-label">Mr. White Thắng</div>
+          </div>
+        </div>
+
+        <label class="form-label" style="display: flex; justify-content: space-between;">
+          <span>30 TRẬN GẦN NHẤT</span>
+          <button id="btn-clear-history" style="background: none; border: none; color: var(--color-spy); cursor: pointer; font-size: 0.78rem;">Xóa lịch sử</button>
+        </label>
+        <div id="history-list-container" style="max-height: 220px; overflow-y: auto;">
+          <!-- Render danh sách lịch sử -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary modal-close" style="width: 100%;">ĐÓNG</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Chọn Avatar -->
+  <div id="modal-avatar-picker" class="modal-overlay">
+    <div class="modal-box" style="max-width: 360px;">
+      <div class="modal-header">
+        <h3 style="font-size: 1.1rem; font-weight: bold;">Chọn Biểu Tượng</h3>
+        <button class="btn btn-outline btn-icon modal-close" style="width: 32px; height: 32px;">✕</button>
+      </div>
+      <div class="modal-body" style="padding: 1rem;">
+        <div id="avatar-grid-picker" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; text-align: center;">
+          <!-- Render 16 avatar -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Container hiển thị thông báo Toast -->
+  <div id="toast-container"></div>
+
+  <!-- ==================== SCRIPTS ==================== -->
+  <script src="js/storage.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/wordBank.js"></script>
+  <script src="js/roles.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/voting.js"></script>
+  <script src="js/scoring.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/app.js"></script>
+
+  <!-- PWA Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(reg => console.log('Service Worker đã sẵn sàng:', reg.scope))
+          .catch(err => console.log('Lỗi đăng ký Service Worker:', err));
+      });
+    }
+  </script>
+</body>
+</html>
+

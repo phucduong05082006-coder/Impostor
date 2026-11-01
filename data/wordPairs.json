@@ -1,0 +1,98 @@
+{
+  "pairs": [
+    { "topic": "do_an", "difficulty": "easy", "wordA": "Phở bò", "wordB": "Bún bò Huế", "hint": "Món nước truyền thống" },
+    { "topic": "do_an", "difficulty": "easy", "wordA": "Bánh mì", "wordB": "Bánh bao", "hint": "Điểm tâm sáng" },
+    { "topic": "do_an", "difficulty": "easy", "wordA": "Pizza", "wordB": "Hamburger", "hint": "Đồ ăn nhanh phương Tây" },
+    { "topic": "do_an", "difficulty": "easy", "wordA": "Gà rán", "wordB": "Khoai tây chiên", "hint": "Đồ chiên giòn" },
+    { "topic": "do_an", "difficulty": "medium", "wordA": "Bún chả", "wordB": "Bún thịt nướng", "hint": "Món bún kèm thịt nướng" },
+    { "topic": "do_an", "difficulty": "medium", "wordA": "Bánh xèo", "wordB": "Bánh khọt", "hint": "Bánh chiên vàng giòn miền Nam" },
+    { "topic": "do_an", "difficulty": "medium", "wordA": "Bánh chưng", "wordB": "Bánh tét", "hint": "Bánh truyền thống ngày Tết" },
+    { "topic": "do_an", "difficulty": "hard", "wordA": "Gỏi cuốn", "wordB": "Chả giò", "hint": "Cuốn chấm nước sốt" },
+    { "topic": "do_an", "difficulty": "hard", "wordA": "Hủ tiếu Nam Vang", "wordB": "Mì vằn thắn", "hint": "Món sợi nước lèo thơm ngọt" },
+
+    { "topic": "do_uong", "difficulty": "easy", "wordA": "Cà phê", "wordB": "Trà sữa", "hint": "Đồ uống phổ biến của giới trẻ" },
+    { "topic": "do_uong", "difficulty": "easy", "wordA": "Nước cam", "wordB": "Nước chanh", "hint": "Nước quả vị chua nhiều vitamin C" },
+    { "topic": "do_uong", "difficulty": "easy", "wordA": "Coca Cola", "wordB": "Pepsi", "hint": "Nước ngọt có ga đen" },
+    { "topic": "do_uong", "difficulty": "medium", "wordA": "Bia hơi", "wordB": "Rượu vang", "hint": "Thức uống có cồn" },
+    { "topic": "do_uong", "difficulty": "medium", "wordA": "Nước dừa", "wordB": "Nước mía", "hint": "Nước giải khát thiên nhiên ngọt mát" },
+    { "topic": "do_uong", "difficulty": "hard", "wordA": "Bạc xỉu", "wordB": "Cà phê sữa đá", "hint": "Cà phê pha nhiều sữa ngọt" },
+    { "topic": "do_uong", "difficulty": "hard", "wordA": "Cocktail", "wordB": "Mocktail", "hint": "Đồ uống pha chế quầy bar" },
+
+    { "topic": "dong_vat", "difficulty": "easy", "wordA": "Con chó", "wordB": "Chó sói", "hint": "Động vật họ chó" },
+    { "topic": "dong_vat", "difficulty": "easy", "wordA": "Con mèo", "wordB": "Con hổ", "hint": "Động vật họ mèo" },
+    { "topic": "dong_vat", "difficulty": "easy", "wordA": "Con gà", "wordB": "Con vịt", "hint": "Gia cầm quen thuộc" },
+    { "topic": "dong_vat", "difficulty": "medium", "wordA": "Sư tử", "wordB": "Con báo", "hint": "Động vật săn mồi ăn thịt" },
+    { "topic": "dong_vat", "difficulty": "medium", "wordA": "Cá heo", "wordB": "Cá voi", "hint": "Thú có vú sống dưới biển" },
+    { "topic": "dong_vat", "difficulty": "medium", "wordA": "Con khỉ", "wordB": "Tinh tinh", "hint": "Linh trưởng thông minh" },
+    { "topic": "dong_vat", "difficulty": "hard", "wordA": "Cá sấu", "wordB": "Kỳ đà", "hint": "Bò sát máu lạnh" },
+    { "topic": "dong_vat", "difficulty": "hard", "wordA": "Chim cánh cụt", "wordB": "Hải cẩu", "hint": "Sinh vật sống vùng băng tuyết" },
+
+    { "topic": "dia_diem", "difficulty": "easy", "wordA": "Bãi biển", "wordB": "Hồ bơi", "hint": "Nơi tắm mát dưới nước" },
+    { "topic": "dia_diem", "difficulty": "easy", "wordA": "Rạp chiếu phim", "wordB": "Nhà hát kịch", "hint": "Nơi thưởng thức nghệ thuật biểu diễn" },
+    { "topic": "dia_diem", "difficulty": "easy", "wordA": "Siêu thị", "wordB": "Chợ truyền thống", "hint": "Nơi mua sắm thực phẩm hàng ngày" },
+    { "topic": "dia_diem", "difficulty": "medium", "wordA": "Sân bay", "wordB": "Ga tàu hỏa", "hint": "Bến đỗ phương tiện đi xa" },
+    { "topic": "dia_diem", "difficulty": "medium", "wordA": "Bệnh viện", "wordB": "Trạm y tế", "hint": "Nơi khám chữa bệnh" },
+    { "topic": "dia_diem", "difficulty": "hard", "wordA": "Bảo tàng", "wordB": "Triển lãm tranh", "hint": "Nơi trưng bày hiện vật nghệ thuật" },
+    { "topic": "dia_diem", "difficulty": "hard", "wordA": "Thư viện", "wordB": "Hiệu sách", "hint": "Nơi chứa hàng nghìn đầu sách" },
+
+    { "topic": "do_vat", "difficulty": "easy", "wordA": "Điện thoại", "wordB": "Máy tính bảng", "hint": "Thiết bị màn hình cảm ứng di động" },
+    { "topic": "do_vat", "difficulty": "easy", "wordA": "Cái kéo", "wordB": "Con dao", "hint": "Dụng cụ cắt sắc bén" },
+    { "topic": "do_vat", "difficulty": "easy", "wordA": "Áo mưa", "wordB": "Cái ô (dù)", "hint": "Đồ che mưa khi ra ngoài" },
+    { "topic": "do_vat", "difficulty": "medium", "wordA": "Tủ lạnh", "wordB": "Máy làm đá", "hint": "Thiết bị làm mát bảo quản" },
+    { "topic": "do_vat", "difficulty": "medium", "wordA": "Kính râm", "wordB": "Kính cận", "hint": "Mắt kính bảo vệ hoặc hỗ trợ nhìn" },
+    { "topic": "do_vat", "difficulty": "hard", "wordA": "Đồng hồ đeo tay", "wordB": "Đồng hồ báo thức", "hint": "Vật dụng xem giờ giấc" },
+    { "topic": "do_vat", "difficulty": "hard", "wordA": "Nồi cơm điện", "wordB": "Nồi áp suất", "hint": "Thiết bị nhà bếp nấu nướng" },
+
+    { "topic": "nghe_nghiep", "difficulty": "easy", "wordA": "Bác sĩ", "wordB": "Y tá", "hint": "Người làm việc tại bệnh viện" },
+    { "topic": "nghe_nghiep", "difficulty": "easy", "wordA": "Công an", "wordB": "Bảo vệ", "hint": "Người giữ gìn trật tự an ninh" },
+    { "topic": "nghe_nghiep", "difficulty": "easy", "wordA": "Giáo viên", "wordB": "Gia sư", "hint": "Người truyền dạy kiến thức" },
+    { "topic": "nghe_nghiep", "difficulty": "medium", "wordA": "Đầu bếp", "wordB": "Thợ làm bánh", "hint": "Người chế biến món ăn ngon" },
+    { "topic": "nghe_nghiep", "difficulty": "medium", "wordA": "Phi công", "wordB": "Tiếp viên hàng không", "hint": "Làm việc trên các chuyến bay" },
+    { "topic": "nghe_nghiep", "difficulty": "hard", "wordA": "Thám tử", "wordB": "Gián điệp ngầm", "hint": "Người điều tra bí mật" },
+    { "topic": "nghe_nghiep", "difficulty": "hard", "wordA": "Luật sư", "wordB": "Thẩm phán", "hint": "Làm việc trong ngành tư pháp tòa án" },
+
+    { "topic": "the_thao", "difficulty": "easy", "wordA": "Bóng đá", "wordB": "Bóng rổ", "hint": "Môn thể thao đồng đội với trái bóng" },
+    { "topic": "the_thao", "difficulty": "easy", "wordA": "Cầu lông", "wordB": "Quần vợt (Tennis)", "hint": "Môn thể thao cầm vợt đập bóng qua lưới" },
+    { "topic": "the_thao", "difficulty": "medium", "wordA": "Chạy bộ", "wordB": "Đi bộ nhanh", "hint": "Môn thể dục rèn luyện đôi chân" },
+    { "topic": "the_thao", "difficulty": "medium", "wordA": "Bóng bàn", "wordB": "Bida (Bi-a)", "hint": "Môn thể thao chơi trên bàn phẳng" },
+    { "topic": "the_thao", "difficulty": "hard", "wordA": "Quyền anh (Boxing)", "wordB": "Võ Karate", "hint": "Môn đối kháng dùng sức mạnh thể chất" },
+    { "topic": "the_thao", "difficulty": "hard", "wordA": "Bơi lội", "wordB": "Lặn biển", "hint": "Vận động dưới môi trường nước" },
+
+    { "topic": "du_lich", "difficulty": "easy", "wordA": "Đà Lạt", "wordB": "Sa Pa", "hint": "Thành phố sương mù trên núi cao mát mẻ" },
+    { "topic": "du_lich", "difficulty": "easy", "wordA": "Nha Trang", "wordB": "Phú Quốc", "hint": "Thành phố du lịch biển đảo nổi tiếng" },
+    { "topic": "du_lich", "difficulty": "medium", "wordA": "Đi phượt xe máy", "wordB": "Cắm trại picnic", "hint": "Trải nghiệm khám phá dã ngoại tự do" },
+    { "topic": "du_lich", "difficulty": "hard", "wordA": "Khách sạn 5 sao", "wordB": "Homestay nhà vườn", "hint": "Nơi lưu trú khi đi du lịch" },
+
+    { "topic": "cong_nghe", "difficulty": "easy", "wordA": "Mạng Wifi", "wordB": "Mạng 4G/5G", "hint": "Kết nối Internet không dây" },
+    { "topic": "cong_nghe", "difficulty": "easy", "wordA": "Laptop", "wordB": "Máy tính để bàn (PC)", "hint": "Máy tính cá nhân xử lý công việc" },
+    { "topic": "cong_nghe", "difficulty": "medium", "wordA": "Bàn phím cơ", "wordB": "Chuột máy tính", "hint": "Thiết bị ngoại vi nhập dữ liệu" },
+    { "topic": "cong_nghe", "difficulty": "hard", "wordA": "Trí tuệ nhân tạo (AI)", "wordB": "Robot tự động", "hint": "Công nghệ thông minh mô phỏng tư duy con người" },
+
+    { "topic": "phim_anh", "difficulty": "easy", "wordA": "Người Nhện (Spider-Man)", "wordB": "Batman", "hint": "Siêu anh hùng bảo vệ thành phố" },
+    { "topic": "phim_anh", "difficulty": "medium", "wordA": "Phim kinh dị", "wordB": "Phim trinh thám", "hint": "Thể loại phim căng thẳng hồi hộp" },
+    { "topic": "phim_anh", "difficulty": "hard", "wordA": "Rạp chiếu phim 2D", "wordB": "Rạp IMAX 3D", "hint": "Trải nghiệm màn ảnh rộng sống động" },
+
+    { "topic": "truong_hoc", "difficulty": "easy", "wordA": "Bút bi", "wordB": "Bút chì", "hint": "Dụng cụ dùng để viết vẽ" },
+    { "topic": "truong_hoc", "difficulty": "easy", "wordA": "Sách giáo khoa", "wordB": "Vở ô ly", "hint": "Tài liệu học tập trên bàn" },
+    { "topic": "truong_hoc", "difficulty": "medium", "wordA": "Kỳ thi học kỳ", "wordB": "Bài kiểm tra 15 phút", "hint": "Đánh giá kết quả học tập" },
+    { "topic": "truong_hoc", "difficulty": "hard", "wordA": "Bảng đen phấn trắng", "wordB": "Bảng từ bút dạ", "hint": "Bảng dùng giáo viên giảng bài" },
+
+    { "topic": "giao_thong", "difficulty": "easy", "wordA": "Xe máy", "wordB": "Xe đạp", "hint": "Phương tiện hai bánh trên đường" },
+    { "topic": "giao_thong", "difficulty": "easy", "wordA": "Xe buýt", "wordB": "Tàu điện đô thị", "hint": "Phương tiện giao thông công cộng chở khách" },
+    { "topic": "giao_thong", "difficulty": "medium", "wordA": "Cầu vượt", "wordB": "Hầm chui", "hint": "Công trình giao thông tránh kẹt xe" },
+    { "topic": "giao_thong", "difficulty": "hard", "wordA": "Máy bay trực thăng", "wordB": "Máy bay phản lực", "hint": "Phương tiện bay trên bầu trời" },
+
+    { "topic": "thien_nhien", "difficulty": "easy", "wordA": "Biển cả", "wordB": "Hồ nước ngọt", "hint": "Vùng nước mênh mông" },
+    { "topic": "thien_nhien", "difficulty": "easy", "wordA": "Cơn mưa rào", "wordB": "Tuyết rơi", "hint": "Hiện tượng thời tiết rơi từ mây" },
+    { "topic": "thien_nhien", "difficulty": "medium", "wordA": "Bình minh", "wordB": "Hoàng hôn", "hint": "Khoảnh khắc mặt trời ló dạng hoặc lặn" },
+    { "topic": "thien_nhien", "difficulty": "hard", "wordA": "Núi lửa phun trào", "wordB": "Động đất rung chuyển", "hint": "Thảm họa thiên nhiên từ lòng đất" },
+
+    { "topic": "nhan_vat", "difficulty": "easy", "wordA": "Sơn Tinh", "wordB": "Thủy Tinh", "hint": "Hai vị thần tranh tài cầu hôn Mỵ Nương" },
+    { "topic": "nhan_vat", "difficulty": "medium", "wordA": "Tôn Ngộ Không", "wordB": "Trư Bát Giới", "hint": "Đồ đệ phò Đường Tăng đi thỉnh kinh" },
+    { "topic": "nhan_vat", "difficulty": "hard", "wordA": "Thạch Sanh", "wordB": "Lý Thông", "hint": "Nhân vật trong truyện cổ tích đối lập tốt - xấu" },
+
+    { "topic": "doi_song", "difficulty": "easy", "wordA": "Nấu cơm", "wordB": "Rửa bát", "hint": "Công việc nhà bếp hàng ngày" },
+    { "topic": "doi_song", "difficulty": "medium", "wordA": "Đi siêu thị", "wordB": "Mua hàng online", "hint": "Phương thức sắm sửa đồ dùng" },
+    { "topic": "doi_song", "difficulty": "hard", "wordA": "Tiền mặt", "wordB": "Chuyển khoản QR", "hint": "Phương thức thanh toán chi tiêu" }
+  ]
+}
