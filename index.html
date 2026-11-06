@@ -25,6 +25,12 @@
 
     <!-- ==================== 1. HOME SCREEN ==================== -->
     <section id="screen-home" class="screen active">
+      <div style="position: absolute; top: 1.25rem; right: 1.25rem; z-index: 10;">
+        <button id="btn-quick-bgm" class="btn btn-outline btn-icon" title="Bật/Tắt Nhạc Nền" style="border-radius: 50%; width: 40px; height: 40px; font-size: 1.1rem; background: var(--bg-surface-elevated);">
+          🎵
+        </button>
+      </div>
+
       <div class="home-hero">
         <div class="home-logo-badge">🕵️</div>
         <h1 class="home-title">SPY PARTY</h1>
@@ -535,8 +541,16 @@
             <input type="checkbox" id="setting-sound-toggle" checked style="width: 20px; height: 20px;">
           </div>
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
-            <span>Âm lượng</span>
+            <span>Nhạc nền huyền bí (BGM)</span>
+            <input type="checkbox" id="setting-bgm-toggle" checked style="width: 20px; height: 20px;">
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+            <span>Âm lượng hiệu ứng</span>
             <input type="range" id="setting-volume-slider" min="0" max="1" step="0.1" value="0.7">
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+            <span>Âm lượng nhạc nền</span>
+            <input type="range" id="setting-bgm-slider" min="0" max="1" step="0.05" value="0.35">
           </div>
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <span>Rung phản hồi (Haptic)</span>

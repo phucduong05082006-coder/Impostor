@@ -71,10 +71,11 @@
         const test9 = (white.secretWord === null) && (white.wordLabel.includes('Mr. White'));
         log(`Test 9: Mr. White hoàn toàn không có từ khóa bí mật`, test9);
 
-        // Test 10: Cơ chế bỏ phiếu - Không cho tự bỏ phiếu cho chính mình
+        // Test 10: Cơ chế bỏ phiếu - Không cho tự bỏ phiếu cho chính mình nhưng cho phép bỏ phiếu trắng (skip)
         window.appVotingManager.startVotingSession(assigned);
         const selfVote = window.appVotingManager.submitVote('p1', 'p1');
-        log(`Test 10: Ngăn chặn tự bỏ phiếu cho chính mình`, !selfVote.success);
+        const skipVote = window.appVotingManager.submitVote('p1', 'skip');
+        log(`Test 10: Ngăn chặn tự bỏ phiếu cho chính mình (${!selfVote.success}) & Cho phép bỏ phiếu trắng (${skipVote.success})`, !selfVote.success && skipVote.success);
 
         // Test 11: Không cho người đã bị loại tham gia bỏ phiếu
         assigned[2].isAlive = false; // p3 eliminated
@@ -82,7 +83,7 @@
         window.appVotingManager.startVotingSession(aliveOnly);
         log(`Test 11: Người bị loại không có trong danh sách cử tri`, window.appVotingManager.voters.length === 2 && !window.appVotingManager.voters.some(p => p.id === 'p3'));
 
-        // Test 12: Xử lý hòa phiếu
+        // Test 12: Xử lý hòa phiếu & Xử lý đa số phiếu chọn "Không loại ai"
         const tiePlayers = [
           { id: 'a', name: 'A', avatar: '🕵️', isAlive: true },
           { id: 'b', name: 'B', avatar: '🐺', isAlive: true },
@@ -95,7 +96,16 @@
         window.appVotingManager.submitVote('b', 'd'); // d gets 2
         window.appVotingManager.submitVote('d', 'b'); // b gets 2 (b=2, d=2)
         const tally = window.appVotingManager.tallyResults(tiePlayers);
-        log(`Test 12: Phát hiện hòa phiếu chính xác giữa các ứng viên cao nhất`, tally.isTie && tally.topCandidates.length === 2);
+        log(`Test 12a: Phát hiện hòa phiếu chính xác giữa các ứng viên cao nhất`, tally.isTie && tally.topCandidates.length === 2);
+
+        // Test 12b: Phiếu trắng áp đảo -> Không loại ai
+        window.appVotingManager.startVotingSession(tiePlayers);
+        window.appVotingManager.submitVote('a', 'skip');
+        window.appVotingManager.submitVote('b', 'skip');
+        window.appVotingManager.submitVote('c', 'skip');
+        window.appVotingManager.submitVote('d', 'a');
+        const tallySkip = window.appVotingManager.tallyResults(tiePlayers);
+        log(`Test 12b: Đa số chọn phiếu trắng -> Kết quả không loại ai thành công`, tallySkip.noElimination === true && tallySkip.skipVotes === 3);
 
         // Test 13: Xử lý Mr. White đoán từ khóa
         const guessCorrect = window.appScoringManager.checkMrWhiteGuess('pho bo', 'Phở bò');
@@ -141,8 +151,10 @@
         // Test 18: Kiểm tra Service Worker file tồn tại
         log(`Test 18: File service-worker.js sẵn sàng hỗ trợ offline PWA`, true);
 
-        // Test 19: Web Audio API engine sẵn sàng
-        log(`Test 19: Bộ sinh âm thanh Web Audio API và Haptics sẵn sàng`, window.appAudio !== undefined);
+        // Test 19: Web Audio API engine sẵn sàng, hỗ trợ BGM huyền bí & âm báo chuyển lượt
+        const hasBGM = typeof window.appAudio.startBGM === 'function' && typeof window.appAudio.stopBGM === 'function';
+        const hasTurnNotice = typeof window.appAudio.playTurnNotice === 'function';
+        log(`Test 19: Bộ sinh âm thanh Web Audio API hỗ trợ Nhạc nền BGM (${hasBGM}) & Chuông chuyển lượt (${hasTurnNotice})`, hasBGM && hasTurnNotice);
 
         // Test 20: Không có nút nào bị chết hoặc thiếu logic
         log(`Test 20: Bộ điều khiển AppController & GameEngine liên kết hoàn chỉnh`, window.appGameEngine !== undefined);

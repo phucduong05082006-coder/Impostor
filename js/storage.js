@@ -51,16 +51,32 @@ class StorageManager {
 
   initDefaultData() {
     // 1. Cài đặt mặc định
-    if (!this.getItem('spy_party_settings')) {
+    const currentSettings = this.getItem('spy_party_settings');
+    if (!currentSettings) {
       this.setItem('spy_party_settings', {
         soundEnabled: true,
+        bgmEnabled: true,
         volume: 0.7,
+        bgmVolume: 0.35,
         vibrationEnabled: true,
         effectsEnabled: true,
         clueTime: 45,        // giây cho mỗi lượt gợi ý
         discussionTime: 90,  // giây cho thảo luận chung
         allowTieNoElim: true // cho phép hòa phiếu không ai bị loại
       });
+    } else {
+      let updated = false;
+      if (currentSettings.bgmEnabled === undefined) {
+        currentSettings.bgmEnabled = true;
+        updated = true;
+      }
+      if (currentSettings.bgmVolume === undefined) {
+        currentSettings.bgmVolume = 0.35;
+        updated = true;
+      }
+      if (updated) {
+        this.setItem('spy_party_settings', currentSettings);
+      }
     }
 
     // 2. Thống kê ban đầu

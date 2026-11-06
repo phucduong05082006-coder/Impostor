@@ -298,6 +298,24 @@
   transform: scale(1.02);
 }
 
+.candidate-card-skip {
+  border-style: dashed;
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.candidate-card-skip:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.candidate-card-skip.selected {
+  border-style: solid;
+  border-color: var(--color-civilian);
+  background: rgba(6, 182, 212, 0.18);
+  box-shadow: 0 0 16px var(--color-civilian-glow);
+  transform: scale(1.02);
+}
+
 /* --- 6. Voting Results Screen --- */
 .result-tally-list {
   display: flex;

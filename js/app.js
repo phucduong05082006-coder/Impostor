@@ -107,6 +107,20 @@ class AppController {
 
   // --- 2. Sự kiện Home Screen ---
   bindHomeEvents() {
+    const quickBgmBtn = document.getElementById('btn-quick-bgm');
+    if (quickBgmBtn) {
+      this.updateQuickBgmBtn();
+      quickBgmBtn.addEventListener('click', () => {
+        const nextState = !window.appAudio.bgmEnabled;
+        window.appAudio.toggleBGM(nextState);
+        const settings = window.appStorage.getSettings() || {};
+        settings.bgmEnabled = nextState;
+        window.appStorage.saveSettings(settings);
+        this.updateQuickBgmBtn();
+        this.showToast(nextState ? '🎵 Đã bật nhạc nền huyền bí' : '🔇 Đã tắt nhạc nền', 'info');
+      });
+    }
+
     document.getElementById('btn-home-start').addEventListener('click', () => {
       this.renderPlayersList();
       this.switchScreen('players');
@@ -128,6 +142,23 @@ class AppController {
       this.loadHistoryModal();
       document.getElementById('modal-history').classList.add('active');
     });
+  }
+
+  updateQuickBgmBtn() {
+    const btn = document.getElementById('btn-quick-bgm');
+    if (btn) {
+      if (window.appAudio.bgmEnabled && !window.appAudio.isMuted) {
+        btn.innerHTML = '🎵';
+        btn.title = 'Nhạc nền: Đang BẬT (Chạm để tắt)';
+        btn.style.borderColor = 'var(--primary)';
+        btn.style.boxShadow = '0 0 10px var(--primary-glow)';
+      } else {
+        btn.innerHTML = '🔇';
+        btn.title = 'Nhạc nền: Đang TẮT (Chạm để bật)';
+        btn.style.borderColor = 'var(--border-glass)';
+        btn.style.boxShadow = 'none';
+      }
+    }
   }
 
   // --- 3. Sự kiện Player Setup ---
@@ -383,7 +414,8 @@ class AppController {
 
       window.appAudio.playCardFlip();
       setTimeout(() => {
-        window.appAudio.playRoleReveal(currentPlayer.role);
+        // Âm thanh mở vai trò đồng nhất 100% cho mọi người để tránh lộ thân phận
+        window.appAudio.playRoleReveal();
       }, 150);
 
       this.populateRevealCardBack(currentPlayer);
@@ -402,6 +434,8 @@ class AppController {
         } else {
           this.renderRevealPlayerFront(result.nextPlayer);
           this.renderRevealDots();
+          // Âm thanh thông báo chuyển máy cho người tiếp theo
+          window.appAudio.playTurnNotice();
         }
       }, 350);
     });
@@ -413,6 +447,8 @@ class AppController {
     const firstPlayer = window.appGameEngine.getCurrentRevealPlayer();
     this.renderRevealPlayerFront(firstPlayer);
     this.renderRevealDots();
+    // Chuông thông báo người chơi đầu tiên nhận thiết bị
+    window.appAudio.playTurnNotice();
   }
 
   renderRevealPlayerFront(player) {
@@ -478,6 +514,8 @@ class AppController {
     document.getElementById('clue-round-num').textContent = window.appGameEngine.roundNumber;
     this.renderCurrentClueSpeaker();
     this.renderCluePlayersStatus();
+    // Chuông thông báo đến lượt gợi ý
+    window.appAudio.playTurnNotice();
   }
 
   renderCurrentClueSpeaker() {
@@ -517,6 +555,8 @@ class AppController {
     } else {
       this.renderCurrentClueSpeaker();
       this.renderCluePlayersStatus();
+      // Chuông thông báo chuyển lượt người tiếp theo đưa ra gợi ý
+      window.appAudio.playTurnNotice();
     }
   }
 
@@ -567,6 +607,8 @@ class AppController {
         document.getElementById('voting-ballot-box').style.display = 'none';
         document.getElementById('voting-curtain-box').style.display = 'flex';
         this.renderCurrentVoterCurtain(res.nextVoter);
+        // Âm thanh báo đến lượt cử tri tiếp theo cầm máy
+        window.appAudio.playTurnNotice();
       }
     });
   }
@@ -582,6 +624,8 @@ class AppController {
 
     const firstVoter = window.appVotingManager.getCurrentVoter();
     this.renderCurrentVoterCurtain(firstVoter);
+    // Âm thanh thông báo cử tri đầu tiên nhận máy
+    window.appAudio.playTurnNotice();
   }
 
   renderCurrentVoterCurtain(voter) {
@@ -599,6 +643,7 @@ class AppController {
     const candidates = window.appVotingManager.getCandidates(currentVoter.id);
     const submitBtn = document.getElementById('btn-submit-vote');
 
+    // 1. Danh sách người chơi nghi phạm
     candidates.forEach(c => {
       const card = document.createElement('div');
       card.className = 'candidate-card';
@@ -620,6 +665,30 @@ class AppController {
 
       container.appendChild(card);
     });
+
+    // 2. Tùy chọn BỎ PHIẾU TRẮNG / KHÔNG LOẠI AI
+    const skipCard = document.createElement('div');
+    skipCard.className = 'candidate-card candidate-card-skip';
+    skipCard.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 0.8rem;">
+        <span class="avatar avatar-sm" style="background: rgba(255, 255, 255, 0.08);">🕊️</span>
+        <div>
+          <div style="font-weight: 700; font-size: 1.05rem; color: #f8fafc;">Bỏ phiếu trắng</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Không nghi ngờ hoặc không muốn loại ai</div>
+        </div>
+      </div>
+      <span class="badge" style="background: rgba(255,255,255,0.08); color: #cbd5e1;">Bỏ qua</span>
+    `;
+
+    skipCard.addEventListener('click', () => {
+      window.appAudio.playClick();
+      container.querySelectorAll('.candidate-card').forEach(el => el.classList.remove('selected'));
+      skipCard.classList.add('selected');
+      this.selectedVoteTargetId = 'skip';
+      submitBtn.disabled = false;
+    });
+
+    container.appendChild(skipCard);
   }
 
   startVotingResultsPhase() {
@@ -642,6 +711,7 @@ class AppController {
       return vB - vA;
     });
 
+    // 1. Hiển thị kết quả từng ứng viên
     sortedCandidates.forEach(cand => {
       const votes = result.tallyMap[cand.id] || 0;
       const percent = result.maxVotes > 0 ? (votes / result.maxVotes) * 100 : 0;
@@ -666,12 +736,52 @@ class AppController {
       container.appendChild(item);
     });
 
-    if (result.isTie) {
+    // 2. Hiển thị kết quả Bỏ phiếu trắng / Không loại ai
+    const skipVotes = result.skipVotes || 0;
+    const skipPercent = result.maxVotes > 0 ? (skipVotes / result.maxVotes) * 100 : 0;
+    const isSkipTop = result.noElimination || result.tiedWithSkip;
+
+    const skipItem = document.createElement('div');
+    skipItem.className = 'result-tally-item';
+    if (isSkipTop) skipItem.style.borderColor = 'var(--color-civilian)';
+
+    skipItem.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <span class="avatar avatar-sm" style="background: rgba(255,255,255,0.08);">🕊️</span>
+          <strong style="font-size: 1rem;">Không loại ai (Phiếu trắng)</strong>
+        </div>
+        <span class="badge ${isSkipTop ? 'badge-civilian' : ''}">${skipVotes} phiếu</span>
+      </div>
+      <div class="tally-bar-bg">
+        <div class="tally-bar-fill" style="width: ${skipPercent}%; background: linear-gradient(90deg, #06b6d4 0%, #10b981 100%);"></div>
+      </div>
+    `;
+    container.appendChild(skipItem);
+
+    // 3. Xử lý các tình huống kết quả
+    if (result.noElimination) {
+      // ĐA SỐ CHỌN KHÔNG LOẠI AI
+      heroIcon.textContent = '🕊️';
+      heroTitle.textContent = 'KHÔNG AI BỊ LOẠI VÒNG NÀY!';
+      heroDesc.textContent = result.reason || `Đa số cử tri (${skipVotes} phiếu) đã bỏ phiếu trắng chọn không loại ai.`;
+
+      const contBtn = document.createElement('button');
+      contBtn.className = 'btn btn-primary btn-block btn-lg';
+      contBtn.innerHTML = '<span>🕊️ TIẾP TỤC VÒNG TIẾP THEO</span>';
+      contBtn.addEventListener('click', () => {
+        window.appAudio.playClick();
+        this.showToast('Không ai bị loại! Bắt đầu vòng gợi ý tiếp theo.', 'info');
+        window.appGameEngine.startNextRound();
+        this.startCluePhase();
+      });
+      actionsBox.appendChild(contBtn);
+
+    } else if (result.isTie) {
       // HÒA PHIẾU
       heroIcon.textContent = '⚖️';
       heroTitle.textContent = 'HÒA PHIẾU CĂNG THẲNG!';
-      const tiedNames = result.topCandidates.map(c => c.name).join(' và ');
-      heroDesc.textContent = `${tiedNames} có cùng số phiếu cao nhất (${result.maxVotes} phiếu).`;
+      heroDesc.textContent = result.reason;
 
       // Nút bỏ phiếu lại
       const revoteBtn = document.createElement('button');
@@ -709,6 +819,7 @@ class AppController {
         this.handlePlayerElimination(eliminated);
       });
       actionsBox.appendChild(confirmBtn);
+
     } else {
       // Không có ai bị vote
       heroTitle.textContent = 'KHÔNG CÓ PHIẾU NÀO ĐƯỢC BẦU!';
@@ -872,14 +983,18 @@ class AppController {
   bindSettingsAndHistoryEvents() {
     document.getElementById('btn-save-settings').addEventListener('click', () => {
       const sound = document.getElementById('setting-sound-toggle').checked;
+      const bgm = document.getElementById('setting-bgm-toggle').checked;
       const volume = parseFloat(document.getElementById('setting-volume-slider').value);
+      const bgmVolume = parseFloat(document.getElementById('setting-bgm-slider').value);
       const vibration = document.getElementById('setting-vibration-toggle').checked;
       const clueTime = parseInt(document.getElementById('setting-clue-time').value, 10);
       const discussTime = parseInt(document.getElementById('setting-discuss-time').value, 10);
 
       window.appStorage.saveSettings({
         soundEnabled: sound,
+        bgmEnabled: bgm,
         volume,
+        bgmVolume,
         vibrationEnabled: vibration,
         effectsEnabled: true,
         clueTime,
@@ -888,8 +1003,12 @@ class AppController {
       });
 
       window.appAudio.toggleSound(sound);
+      window.appAudio.toggleBGM(bgm);
       window.appAudio.setVolume(volume);
+      window.appAudio.setBGMVolume(bgmVolume);
       window.appAudio.toggleVibration(vibration);
+
+      this.updateQuickBgmBtn();
 
       this.showToast('Đã lưu cấu hình cài đặt!', 'success');
       document.getElementById('modal-settings').classList.remove('active');
@@ -921,9 +1040,11 @@ class AppController {
   }
 
   loadSettingsModal() {
-    const settings = window.appStorage.getSettings();
+    const settings = window.appStorage.getSettings() || {};
     document.getElementById('setting-sound-toggle').checked = !window.appAudio.isMuted;
+    document.getElementById('setting-bgm-toggle').checked = window.appAudio.bgmEnabled;
     document.getElementById('setting-volume-slider').value = window.appAudio.volume;
+    document.getElementById('setting-bgm-slider').value = window.appAudio.bgmVolume;
     document.getElementById('setting-vibration-toggle').checked = window.appAudio.vibrationEnabled;
     document.getElementById('setting-clue-time').value = settings.clueTime || 45;
     document.getElementById('setting-discuss-time').value = settings.discussionTime || 90;
