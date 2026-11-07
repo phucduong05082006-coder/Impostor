@@ -14,16 +14,16 @@
 
 2. **3 Vai Trò Cốt Lõi:**
    - 🛡️ **Dân Thường (Civilian):** Nắm giữ từ khóa bí mật, đưa ra gợi ý khéo léo để nhận diện đồng đội và vote loại gián điệp.
-   - 🕵️ **Gián Điệp (Spy):** Không biết từ khóa (Cổ điển) hoặc nhận từ khóa tương đồng (Undercover), phải suy luận từ gợi ý của người khác để ngụy trang và sống sót.
-   - 👤 **Mr. White:** Hoàn toàn không có từ khóa! Nếu bị vote loại, có **1 cơ hội duy nhất** để đoán từ khóa của dân thường: Đoán đúng sẽ **LẬT KÈO THẮNG NGAY LẬP TỨC**!
+   - 🕵️ **Gián Điệp (Spy):** Luôn nhận được một từ khóa **tương đồng, liên quan chặt chẽ** với Dân Thường (Ví dụ: Dân thường là *Cà phê*, Gián điệp là *Trà sữa*). Phải suy luận từ gợi ý của người khác để ngụy trang, lắng nghe từ khóa của Dân thường và sống sót đến cùng!
+   - 👤 **Mr. White:** Hoàn toàn **không có từ khóa** (vai trò duy nhất không biết gì)! Nếu bị vote loại, có **1 cơ hội duy nhất** để đoán từ khóa của dân thường: Đoán đúng sẽ **LẬT KÈO THẮNG NGAY LẬP TỨC**!
 
 3. **3 Chế Độ Chơi Hấp Dẫn:**
-   - 🎭 **Cổ Điển (Classic):** Dân thường chung một từ khóa, Gián điệp và Mr. White không có từ khóa.
-   - 🕵️ **Điệp Viên (Undercover):** Dân thường và Gián điệp nhận 2 từ khóa gần giống nhau (Ví dụ: *Cà phê – Trà sữa*, *Phở bò – Bún bò Huế*, *Chó – Sói*).
+   - 🎭 **Cổ Điển (Classic):** Dân thường và Gián điệp nhận 2 từ khóa liên quan chặt chẽ; Mr. White không có từ khóa.
+   - 🕵️ **Điệp Viên (Undercover):** Ghép đôi từ khóa kịch tính, mỗi phe đều tưởng mình là dân thường cho đến khi các gợi ý bắt đầu lệch nhau!
    - ⚡ **Tùy Chỉnh (Custom):** Tự do thiết lập số lượng từng vai trò, chủ đề từ khóa, độ khó, thời gian đếm ngược và luật hòa phiếu.
 
-4. **Hệ Thống Âm Thanh Độc Bản & Bảo Mật Tuyệt Đối (Web Audio API):**
-   - 🎵 **Nhạc nền huyền bí tự sinh (Mysterious Ambient BGM):** Drone âm trầm kết hợp hợp âm chuông C-minor ma mị, gợi cảm giác trinh thám điện ảnh, có thể bật/tắt nhanh bằng nút 🎵 hoặc tùy chỉnh âm lượng trong Cài đặt.
+4. **Hệ Thống Âm Thanh Độc Bản & Nhạc Nền Game (Web Audio API):**
+   - 🎵 **Nhạc nền Game trinh thám sôi động (Game Soundtrack Sequencer):** Được tổng hợp từ 4 tầng nhạc cụ (Bassline funky điệp viên, Hi-hat/Snare nhịp nhàng 116 BPM, Hợp âm Synth Noir và Giai điệu bí ẩn) giống nhạc nền trong các tựa game nổi tiếng như Among Us hay Spyfall! Bật/tắt nhanh bằng nút 🎵 hoặc chỉnh âm lượng trong Cài đặt.
    - 🔒 **Âm thanh mở vai trò đồng nhất 100%:** Khi lật thẻ xem từ khóa, tất cả người chơi (Dân thường, Gián điệp hay Mr. White) đều nghe **chính xác một hợp âm căng thẳng bí ẩn giống nhau**, triệt tiêu hoàn toàn khả năng bị người ngồi cạnh nghe lỏm và đoán được vai trò!
    - 🔔 **Chuông thông báo chuyển lượt (Turn Notice Chime):** Âm báo 2 nốt ding-dong thanh lịch, nhắc nhở chuyển giao thiết bị khi đến lượt xem vai trò, lượt đưa ra gợi ý và lượt bỏ phiếu kín.
    - 💥 Hiệu ứng xúc giác (Haptic Vibration) khi chạm nút và đếm ngược khẩn cấp.

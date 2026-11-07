@@ -59,14 +59,14 @@
         const assigned = window.appRoleManager.assignRolesToPlayers(
           testPlayers,
           ['civilian', 'spy', 'mr_white'],
-          { mode: 'classic', civilianWord: 'Phở bò', spyWord: '' }
+          { mode: 'classic', civilianWord: 'Phở bò', spyWord: 'Bún bò Huế' }
         );
         const civ = assigned.find(p => p.role === 'civilian');
         const spy = assigned.find(p => p.role === 'spy');
         const white = assigned.find(p => p.role === 'mr_white');
 
-        const test8 = (civ.secretWord === 'Phở bò') && (spy.secretWord === null);
-        log(`Test 8: Dân thường nhận đúng từ khóa, Gián điệp không lộ từ khóa dân thường trong Classic`, test8);
+        const test8 = (civ.secretWord === 'Phở bò') && (spy.secretWord === 'Bún bò Huế');
+        log(`Test 8: Dân thường nhận từ khóa ("Phở bò"), Gián điệp luôn nhận từ khóa liên quan ("Bún bò Huế")`, test8);
 
         const test9 = (white.secretWord === null) && (white.wordLabel.includes('Mr. White'));
         log(`Test 9: Mr. White hoàn toàn không có từ khóa bí mật`, test9);

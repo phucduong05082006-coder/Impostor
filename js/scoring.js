@@ -93,7 +93,7 @@ class ScoringManager {
       totalPlayers: players.length,
       eliminatedCount: eliminated.length,
       civilianWord,
-      spyWord: mode === 'undercover' ? spyWord : null,
+      spyWord: spyWord || null,
       players: players.map(p => ({
         id: p.id,
         name: p.name,

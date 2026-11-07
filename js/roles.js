@@ -24,7 +24,7 @@ const ROLES = {
     borderColor: '#ef4444',
     icon: '🕵️',
     title: 'PHE GIÁN ĐIỆP',
-    description: 'Nhiệm vụ tối mật: Đóng vai dân thường, dựa vào gợi ý của người khác để suy luận từ khóa và tung hỏa mù. Sống sót đến khi số gián điệp bằng hoặc vượt dân thường!'
+    description: 'Nhiệm vụ tối mật: Bạn nhận từ khóa liên quan chặt chẽ nhưng khác Dân Thường! Hãy đưa ra gợi ý khéo léo để ngụy trang, lắng nghe từ khóa của Dân Thường và sống sót đến cùng!'
   },
   MR_WHITE: {
     id: 'mr_white',
@@ -114,15 +114,11 @@ class RoleManager {
         secretWord = civilianWord;
         wordLabel = 'Từ khóa bí mật';
       } else if (roleId === ROLES.SPY.id) {
-        if (mode === 'undercover') {
-          secretWord = spyWord;
-          wordLabel = 'Từ khóa bí mật của bạn';
-        } else {
-          // Classic Mode: Gián điệp không biết từ khóa
-          secretWord = null;
-          wordLabel = 'Không có từ khóa (Bạn là Gián Điệp!)';
-        }
+        // Gián điệp luôn nhận được từ khóa tương đồng, liên quan chặt chẽ với Dân thường
+        secretWord = spyWord;
+        wordLabel = 'Từ khóa bí mật của bạn (Gián Điệp)';
       } else if (roleId === ROLES.MR_WHITE.id) {
+        // Chỉ Mr. White là không có từ khóa
         secretWord = null;
         wordLabel = 'Không có từ khóa (Bạn là Mr. White!)';
       }

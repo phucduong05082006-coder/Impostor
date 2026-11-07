@@ -490,8 +490,15 @@ class AppController {
     title.style.color = player.roleDetails.color;
 
     wordLabel.textContent = player.wordLabel;
-    wordValue.textContent = player.secretWord || '???';
-    wordValue.style.color = player.secretWord ? '#fff' : 'var(--color-spy)';
+    if (player.role === 'mr_white') {
+      wordValue.textContent = 'KHÔNG CÓ TỪ KHÓA';
+      wordValue.style.fontSize = '1.35rem';
+      wordValue.style.color = 'var(--text-muted)';
+    } else {
+      wordValue.textContent = player.secretWord || '???';
+      wordValue.style.fontSize = '1.75rem';
+      wordValue.style.color = '#fff';
+    }
 
     desc.textContent = player.roleDetails.description;
   }

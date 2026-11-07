@@ -1,6 +1,6 @@
 /**
  * SPY PARTY - Audio & Haptics Engine
- * Bộ sinh âm thanh & nhạc nền huyền bí thuần bằng Web Audio API (100% Offline, không phụ thuộc file mp3)
+ * Bộ sinh âm thanh & nhạc nền game huyền bí chuyên nghiệp (100% Offline, không phụ thuộc file mp3)
  */
 
 class AudioManager {
@@ -16,10 +16,13 @@ class AudioManager {
     this.bgmVolume = 0.35;
     this.vibrationEnabled = true;
 
-    // Quản lý BGM
+    // Quản lý BGM Sequencer
     this.isBGMPlaying = false;
-    this.bgmOscs = [];
-    this.bgmTimer = null;
+    this.bgmSchedulerTimer = null;
+    this.bgmCurrentStep = 0;
+    this.bgmNextStepTime = 0;
+    this.tempo = 116; // Nhịp độ 116 BPM chuẩn các tựa game trinh thám/party
+    this.stepDuration = (60 / this.tempo) / 4; // Độ dài 1 nốt móc kép (16th note)
 
     // Tải cấu hình từ Storage nếu có
     if (window.appStorage) {
@@ -115,7 +118,7 @@ class AudioManager {
     this.bgmEnabled = enabled;
     if (this.bgmGain && this.ctx) {
       const targetGain = (this.bgmEnabled && !this.isMuted) ? this.bgmVolume : 0;
-      this.bgmGain.gain.linearRampToValueAtTime(targetGain, this.ctx.currentTime + 0.5);
+      this.bgmGain.gain.linearRampToValueAtTime(targetGain, this.ctx.currentTime + 0.3);
     }
     if (this.bgmEnabled && !this.isMuted) {
       this.startBGM();
@@ -132,15 +135,13 @@ class AudioManager {
     if (this.vibrationEnabled && 'vibrate' in navigator) {
       try {
         navigator.vibrate(pattern);
-      } catch (e) {
-        // Trình duyệt không hỗ trợ hoặc bị chặn
-      }
+      } catch (e) {}
     }
   }
 
   // ==========================================
-  // NHẠC NỀN HUYỀN BÍ (MYSTERIOUS AMBIENT BGM)
-  // Tạo không gian âm thanh điện ảnh, bí ẩn, noir detective bằng Web Audio API
+  // NHẠC NỀN GAME HUYỀN BÍ (PARTY SPY GAME SOUNDTRACK)
+  // Gồm 4 tầng âm thanh: Bassline điệp viên, Hi-hat/Snare nhịp nhàng, Hợp âm Synth Noir & Giai điệu bí ẩn
   // ==========================================
   startBGM() {
     if (this.isBGMPlaying || !this.bgmEnabled || this.isMuted) return;
@@ -148,105 +149,230 @@ class AudioManager {
     if (!this.ctx) return;
 
     this.isBGMPlaying = true;
-    const t = this.ctx.currentTime;
+    this.bgmCurrentStep = 0;
+    this.bgmNextStepTime = this.ctx.currentTime + 0.1;
 
-    // 1. Bass drone ngầm huyền bí (C2 = 65.41Hz, G2 = 98Hz)
-    const droneFilter = this.ctx.createBiquadFilter();
-    droneFilter.type = 'lowpass';
-    droneFilter.frequency.setValueAtTime(180, t);
-    droneFilter.Q.value = 2;
-    droneFilter.connect(this.bgmGain);
-
-    // LFO điều chế tần số cắt tạo cảm giác "thở" bí ẩn chậm rãi
-    const lfo = this.ctx.createOscillator();
-    const lfoGain = this.ctx.createGain();
-    lfo.type = 'sine';
-    lfo.frequency.setValueAtTime(0.08, t); // 12 giây 1 chu kỳ thở
-    lfoGain.gain.setValueAtTime(60, t);
-    lfo.connect(lfoGain);
-    lfoGain.connect(droneFilter.frequency);
-    lfo.start(t);
-    this.bgmOscs.push(lfo);
-
-    // 2 Oscillator tạo âm drone dày
-    const droneFreqs = [65.41, 65.9, 98.0, 130.81];
-    droneFreqs.forEach((freq, idx) => {
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
-      osc.frequency.setValueAtTime(freq, t);
-
-      gain.gain.setValueAtTime(0.001, t);
-      gain.gain.linearRampToValueAtTime(idx === 0 ? 0.35 : 0.15, t + 2.0);
-
-      osc.connect(gain);
-      gain.connect(droneFilter);
-      osc.start(t);
-      this.bgmOscs.push(osc);
-    });
-
-    // 2. Vòng lặp các nốt ngân huyền ảo (Ambient Mystery Melody Chimes)
-    // Thang âm C minor ngũ cung huyền bí: C4 (261.6), Eb4 (311.1), F4 (349.2), G4 (392.0), Bb4 (466.1), C5 (523.2)
-    const mysteryScale = [261.63, 311.13, 349.23, 392.00, 466.16, 523.25, 622.25];
-    const playAmbientNote = () => {
+    // Scheduler vòng lặp chính xác theo thời gian AudioContext
+    const scheduleAhead = () => {
       if (!this.isBGMPlaying || !this.ctx || this.isMuted) return;
 
-      const now = this.ctx.currentTime;
-      const noteFreq = mysteryScale[Math.floor(Math.random() * mysteryScale.length)];
+      while (this.bgmNextStepTime < this.ctx.currentTime + 0.25) {
+        this.scheduleGameMusicStep(this.bgmCurrentStep, this.bgmNextStepTime);
+        this.bgmNextStepTime += this.stepDuration;
+        this.bgmCurrentStep = (this.bgmCurrentStep + 1) % 64; // 4 ô nhịp = 64 bước nốt móc kép
+      }
 
+      this.bgmSchedulerTimer = setTimeout(scheduleAhead, 40);
+    };
+
+    scheduleAhead();
+  }
+
+  stopBGM() {
+    this.isBGMPlaying = false;
+    if (this.bgmSchedulerTimer) {
+      clearTimeout(this.bgmSchedulerTimer);
+      this.bgmSchedulerTimer = null;
+    }
+  }
+
+  /**
+   * Phát các nốt của 4 nhạc cụ ở mỗi bước nhịp (Step 0 - 63)
+   */
+  scheduleGameMusicStep(step, time) {
+    if (!this.ctx || !this.bgmGain) return;
+
+    // --- 1. NHẠC CỤ PERCUSSION (Hi-hats, Snare, Kick) ---
+    // Hi-hat tick mỗi 2 bước (nốt móc đơn)
+    if (step % 2 === 0) {
+      const isAccent = step % 4 === 0;
+      this.playSynthHiHat(time, isAccent ? 0.04 : 0.02);
+    }
+    // Snare / Rimshot click ở phách 2 và 4 (bước 4, 12, 20, 28, 36, 44, 52, 60)
+    if (step % 8 === 4) {
+      this.playSynthSnare(time, 0.07);
+    }
+    // Kick nhịp trầm nhẹ nhàng ở đầu mỗi ô nhịp
+    if (step % 16 === 0 || step % 16 === 10) {
+      this.playSynthKick(time, 0.12);
+    }
+
+    // --- 2. BASSLINE ĐIỆP VIÊN (FUNKY SPY BASS) ---
+    // Tiến trình hòa âm C Minor:
+    // Ô 1 (0-15): C2 (65.4Hz) & C3 (130.8Hz)
+    // Ô 2 (16-31): Ab1 (51.9Hz) & Ab2 (103.8Hz)
+    // Ô 3 (32-47): F1 (43.65Hz) & F2 (87.3Hz)
+    // Ô 4 (48-63): G1 (49.0Hz) & G2 (98.0Hz)
+    const bar = Math.floor(step / 16);
+    const subStep = step % 16;
+    const baseFreqs = [65.41, 51.91, 43.65, 49.00];
+    const root = baseFreqs[bar];
+
+    // Rhythmic Bass pattern: phách 0, 3, 6, 8, 11, 14
+    if ([0, 3, 6, 8, 11, 14].includes(subStep)) {
+      const isOctave = (subStep === 6 || subStep === 14);
+      const freq = isOctave ? root * 2 : root;
+      const dur = this.stepDuration * 1.5;
+      this.playSynthBass(freq, time, dur, isOctave ? 0.18 : 0.24);
+    }
+
+    // --- 3. SYNTH CHORD STABS (HỢP ÂM NOIR BÍ MẬT) ---
+    // Đánh hợp âm off-beat tạo phong cách trinh thám
+    if (subStep === 4 || subStep === 10) {
+      // Hợp âm 3 nốt:
+      // Bar 0: Cm (Eb4, G4, C5)
+      // Bar 1: Ab (Eb4, Ab4, C5)
+      // Bar 2: Fm (F4, Ab4, C5)
+      // Bar 3: G7 (D4, F4, B4)
+      const chordMap = [
+        [311.13, 392.00, 523.25], // Cm
+        [311.13, 415.30, 523.25], // Ab
+        [349.23, 415.30, 523.25], // Fm
+        [293.66, 349.23, 493.88]  // G7
+      ];
+      this.playSynthChord(chordMap[bar], time, this.stepDuration * 2.5, 0.06);
+    }
+
+    // --- 4. GIAI ĐIỆU BÍ ẨN (DETECTIVE HOOK ARPEGGIO) ---
+    // Nốt hook ở nửa cuối mỗi chu kỳ (Bar 2 & Bar 3)
+    if (bar >= 2 && [0, 4, 8, 12].includes(subStep)) {
+      const leadNotes = [523.25, 622.25, 698.46, 783.99, 932.33];
+      const leadFreq = leadNotes[(step % 5)];
+      this.playSynthLead(leadFreq, time, this.stepDuration * 1.8, 0.05);
+    }
+  }
+
+  // --- Các hàm sinh âm nhạc cụ cho BGM ---
+  playSynthKick(time, vol) {
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(120, time);
+    osc.frequency.exponentialRampToValueAtTime(40, time + 0.12);
+
+    gain.gain.setValueAtTime(vol, time);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.14);
+
+    osc.connect(gain);
+    gain.connect(this.bgmGain);
+    osc.start(time);
+    osc.stop(time + 0.15);
+  }
+
+  playSynthHiHat(time, vol) {
+    const bufferSize = this.ctx.sampleRate * 0.04;
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'highpass';
+    filter.frequency.setValueAtTime(7000, time);
+
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(vol, time);
+    gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.035);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.bgmGain);
+
+    noise.start(time);
+  }
+
+  playSynthSnare(time, vol) {
+    const bufferSize = this.ctx.sampleRate * 0.08;
+    const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+    const noise = this.ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(2200, time);
+
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(vol, time);
+    gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.075);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.bgmGain);
+
+    noise.start(time);
+  }
+
+  playSynthBass(freq, time, dur, vol) {
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    const filter = this.ctx.createBiquadFilter();
+
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(freq, time);
+
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(350, time);
+    filter.frequency.exponentialRampToValueAtTime(140, time + dur);
+    filter.Q.value = 3;
+
+    gain.gain.setValueAtTime(vol, time);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.bgmGain);
+
+    osc.start(time);
+    osc.stop(time + dur + 0.02);
+  }
+
+  playSynthChord(freqs, time, dur, vol) {
+    freqs.forEach(f => {
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
       const filter = this.ctx.createBiquadFilter();
 
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(noteFreq, now);
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(f, time);
 
       filter.type = 'bandpass';
-      filter.frequency.setValueAtTime(noteFreq, now);
-      filter.Q.value = 4;
+      filter.frequency.setValueAtTime(f * 1.2, time);
+      filter.Q.value = 2;
 
-      gain.gain.setValueAtTime(0.0001, now);
-      gain.gain.linearRampToValueAtTime(0.08, now + 0.4);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 3.2);
+      gain.gain.setValueAtTime(0.001, time);
+      gain.gain.linearRampToValueAtTime(vol, time + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
 
       osc.connect(filter);
       filter.connect(gain);
       gain.connect(this.bgmGain);
 
-      osc.start(now);
-      osc.stop(now + 3.5);
-
-      // Nhịp tiếp theo xuất hiện ngẫu nhiên sau 2.8s đến 5.5s
-      const nextDelay = 2800 + Math.random() * 2700;
-      this.bgmTimer = setTimeout(playAmbientNote, nextDelay);
-    };
-
-    // Khởi động chuỗi nốt sau 1 giây
-    this.bgmTimer = setTimeout(playAmbientNote, 1000);
+      osc.start(time);
+      osc.stop(time + dur + 0.03);
+    });
   }
 
-  stopBGM() {
-    this.isBGMPlaying = false;
-    if (this.bgmTimer) {
-      clearTimeout(this.bgmTimer);
-      this.bgmTimer = null;
-    }
+  playSynthLead(freq, time, dur, vol) {
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
 
-    if (this.bgmOscs.length > 0 && this.ctx) {
-      const now = this.ctx.currentTime;
-      if (this.bgmGain) {
-        this.bgmGain.gain.linearRampToValueAtTime(0.001, now + 0.6);
-      }
-      setTimeout(() => {
-        this.bgmOscs.forEach(osc => {
-          try {
-            osc.stop();
-            osc.disconnect();
-          } catch (e) {}
-        });
-        this.bgmOscs = [];
-      }, 700);
-    }
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, time);
+
+    gain.gain.setValueAtTime(0.001, time);
+    gain.gain.linearRampToValueAtTime(vol, time + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
+
+    osc.connect(gain);
+    gain.connect(this.bgmGain);
+
+    osc.start(time);
+    osc.stop(time + dur + 0.02);
   }
 
   // ==========================================
@@ -289,9 +415,7 @@ class AudioManager {
     const bufferSize = this.ctx.sampleRate * 0.15;
     const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
     const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-      data[i] = Math.random() * 2 - 1;
-    }
+    for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
 
     const noise = this.ctx.createBufferSource();
     noise.buffer = buffer;
@@ -316,8 +440,7 @@ class AudioManager {
   }
 
   // --- 3. ÂM THANH HIỆN VAI TRÒ BÍ MẬT (ĐỒNG NHẤT 100% CHO TẤT CẢ MỌI NGƯỜI) ---
-  // Yêu cầu quan trọng: Âm thanh phải hoàn toàn giống nhau giữa Dân thường, Gián điệp và Mr. White
-  // để người ngồi cạnh không thể đoán được vai trò qua tai nghe/loa ngoài!
+  // Bảo mật tuyệt đối: Dân thường, Gián điệp và Mr. White đều nghe cùng một âm thanh
   playRoleReveal(role = null) {
     this.vibrate([60, 40, 90]);
     if (this.isMuted) return;
@@ -326,14 +449,13 @@ class AudioManager {
 
     const t = this.ctx.currentTime;
 
-    // Âm sắc bí ẩn gián điệp tinh tế: Hợp âm căng thẳng lấp lánh (Mystery Espionage Shimmer Chord)
-    // Đồng nhất cho mọi người chơi!
+    // Hợp âm kịch tính lấp lánh (Mystery Espionage Shimmer Chord) đồng nhất
     const chordNotes = [
-      { f: 220.00, type: 'sine', gain: 0.18, dur: 0.9 },   // A3 (sub tone bí ẩn)
+      { f: 220.00, type: 'sine', gain: 0.18, dur: 0.9 },   // A3
       { f: 329.63, type: 'triangle', gain: 0.16, dur: 0.8 }, // E4
       { f: 440.00, type: 'sine', gain: 0.14, dur: 0.75 },  // A4
-      { f: 554.37, type: 'sine', gain: 0.12, dur: 0.7 },   // C#5 (tiếng ngân bí ẩn)
-      { f: 880.00, type: 'sine', gain: 0.08, dur: 0.6 }    // A5 (lấp lánh trên cao)
+      { f: 554.37, type: 'sine', gain: 0.12, dur: 0.7 },   // C#5
+      { f: 880.00, type: 'sine', gain: 0.08, dur: 0.6 }    // A5
     ];
 
     chordNotes.forEach((n, i) => {
@@ -357,7 +479,7 @@ class AudioManager {
   }
 
   // --- 4. ÂM THANH THÔNG BÁO CHUYỂN LƯỢT (TURN NOTICE CHIME) ---
-  // Âm thanh hai nốt sang trọng, rõ ràng nhắc nhở đưa máy cho người tiếp theo
+  // Chuông ding-dong ngân vang nhắc nhở chuyển giao thiết bị
   playTurnNotice() {
     this.vibrate([50, 40, 70]);
     if (this.isMuted) return;
@@ -365,10 +487,9 @@ class AudioManager {
     if (!this.ctx) return;
 
     const t = this.ctx.currentTime;
-    // Chuông ding-dong ngân vang (523.25Hz -> 783.99Hz : C5 -> G5)
     const tones = [
-      { freq: 523.25, time: 0.0,  duration: 0.22, vol: 0.22 },
-      { freq: 783.99, time: 0.12, duration: 0.45, vol: 0.26 }
+      { freq: 523.25, time: 0.0,  duration: 0.22, vol: 0.22 }, // C5
+      { freq: 783.99, time: 0.12, duration: 0.45, vol: 0.26 }  // G5
     ];
 
     tones.forEach(tone => {

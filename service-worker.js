@@ -3,7 +3,7 @@
  * Hỗ trợ offline 100% bằng cách lưu trữ toàn bộ tài nguyên cục bộ
  */
 
-const CACHE_NAME = 'spy-party-v1.1.0';
+const CACHE_NAME = 'spy-party-v1.2.0';
 
 const ASSETS_TO_CACHE = [
   './',

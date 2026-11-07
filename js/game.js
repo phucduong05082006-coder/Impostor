@@ -76,15 +76,10 @@ class GameEngine {
       }
     }
 
-    // Chọn từ khóa
-    if (this.mode === 'undercover') {
-      const pair = window.appWordBank.getRandomPair(this.topic, this.difficulty);
-      this.civilianWord = pair.civilianWord;
-      this.spyWord = pair.spyWord;
-    } else {
-      this.civilianWord = window.appWordBank.getRandomWord(this.topic, this.difficulty);
-      this.spyWord = '';
-    }
+    // Luôn chọn cặp từ tương đồng, liên quan chặt chẽ giữa Dân thường và Gián điệp
+    const pair = window.appWordBank.getRandomPair(this.topic, this.difficulty);
+    this.civilianWord = pair.civilianWord;
+    this.spyWord = pair.spyWord;
 
     // Phân vai
     const roleList = window.appRoleManager.generateShuffledRoles(this.roleConfig);
